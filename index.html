@@ -59,15 +59,14 @@
         const MAX_WEEKS = 12;
 
         // 状態配列の順序と色をスクリーンショットに合わせて更新
-        // 時計回り順序: 充実・成長(12時) → 揺らぎ・迷い → 葛藤・抵抗 → 諦め・適応 → 静かな退職 → 無関心 → 退職・転出
         const MENTAL_STATES = [
-            { id: 'growth', label: '充実・成長', subLabel: '', colorBg: '#D46B55', colorBorder: '#B95846' }, // 赤/オレンジ系
+            { id: 'growth', label: '充実・成長', subLabel: '理想', colorBg: '#D46B55', colorBorder: '#B95846' }, // 赤/オレンジ系
             { id: 'waver', label: '揺らぎ・迷い', subLabel: '', colorBg: '#E6CBA9', colorBorder: '#C9AF8D' }, // ベージュ系
-            { id: 'conflict', label: '葛藤・抵抗', subLabel: '(怒りと対立)', colorBg: '#F3E5AB', colorBorder: '#D6C890' }, // 黄色/クリーム系
+            { id: 'conflict', label: '葛藤・抵抗', subLabel: '怒りと対立', colorBg: '#F3E5AB', colorBorder: '#D6C890' }, // 黄色/クリーム系
             { id: 'resignation', label: '諦め・適応', subLabel: '', colorBg: '#BDDDB2', colorBorder: '#9FC194' }, // 緑系
-            { id: 'quiet_quit', label: '静かな退職', subLabel: '', colorBg: '#B3DFD7', colorBorder: '#93BFB7' }, // 青緑/ミント系
-            { id: 'apathy', label: '無関心', subLabel: '', colorBg: '#9BBBE3', colorBorder: '#7E9EC6' }, // 青系
-            { id: 'turnover', label: '退職・転出', subLabel: '', colorBg: '#9B88D6', colorBorder: '#7D6AB8' }, // 紫系
+            { id: 'quiet_quit', label: '静かな退職', subLabel: '危険', colorBg: '#B3DFD7', colorBorder: '#93BFB7' }, // 青緑/ミント系
+            { id: 'apathy', label: '無関心', subLabel: '危険', colorBg: '#9BBBE3', colorBorder: '#7E9EC6' }, // 青系
+            { id: 'turnover', label: '退職・転出', subLabel: '即死', colorBg: '#9B88D6', colorBorder: '#7D6AB8' }, // 紫系
         ];
 
         // 週ごとの環境状況
@@ -364,21 +363,58 @@
                 logsEndRef.current?.scrollIntoView({ behavior: "smooth" });
             }, [history]);
 
-            // 状態判定ロジック（0判定を追加）
+            // 状態判定ロジック（0判定とスコア基準の明確化）
             const determineMentalStateId = (s) => {
-                // 1. パラメータ枯渇による強制退職（0になったら即死）
-                if (s.inst_fairness <= 0 || s.inter_fairness <= 0 || s.autonomy <= 0 || s.competence <= 0 || s.phys_energy <= 0) return 'turnover';
+                // --- 1. 即死判定 (Turnover) ---
+                // いずれかのポジティブパラメータが0、または負荷が100
+                if (
+                    s.inst_fairness <= 0 || 
+                    s.inter_fairness <= 0 || 
+                    s.autonomy <= 0 || 
+                    s.competence <= 0 || 
+                    s.phys_energy <= 0 ||
+                    s.psych_load >= 100
+                ) return 'turnover';
 
-                // 2. 通常の判定
-                if (s.psych_load > 85 || s.phys_energy < 15) return 'turnover'; 
+                // 負荷が高すぎる、またはエネルギーが低すぎる場合も即死級とする
+                if (s.psych_load >= 90 || s.phys_energy <= 10) return 'turnover';
+
+                // --- 2. 危険域判定 (Bad States) ---
                 
-                if (s.inst_fairness < 40 && s.inter_fairness < 40 && s.phys_energy > 40) return 'conflict';
-                if (s.autonomy < 40 && s.psych_load < 60) return 'resignation'; 
-                if (s.competence < 40 && s.autonomy < 40) return 'quiet_quit'; 
-                if (s.phys_energy < 40 && s.competence < 40) return 'apathy'; 
+                // 無関心 (Apathy): エネルギー不足、または有用感の欠如
+                // 「もうどうでもいい」状態
+                if (s.phys_energy < 30 || s.competence < 30) return 'apathy';
+
+                // 静かな退職 (Quiet Quitting): 裁量感の欠如、または制度的不公平感
+                // 「言われたことだけやる」状態
+                if (s.autonomy < 30 || s.inst_fairness < 30) return 'quiet_quit';
+
+                // --- 3. 警告域判定 (Warning States) ---
+
+                // 葛藤・抵抗 (Conflict): 対人関係や評価への不満があるが、エネルギーはある
+                // 「納得いかない」と反発している状態
+                if ((s.inter_fairness < 40 || s.inst_fairness < 40) && s.phys_energy > 50) return 'conflict';
+
+                // 諦め・適応 (Resignation): 負荷が高い、またはある程度の不満があるが、波風立てない
+                // 「こんなもんだろう」と諦めている状態
+                if (s.psych_load > 70 || (s.autonomy < 50 && s.competence < 50)) return 'resignation';
+
+                // --- 4. 理想域判定 (Good States) ---
+
+                // 充実・成長 (Growth): 全体的に高水準でバランスが取れている
+                // フロー状態に近い
+                if (
+                    s.inst_fairness >= 60 &&
+                    s.inter_fairness >= 60 &&
+                    s.autonomy >= 60 &&
+                    s.competence >= 60 &&
+                    s.phys_energy >= 50 &&
+                    s.psych_load <= 50
+                ) return 'growth';
+
+                // --- 5. 通常域 (Default) ---
                 
-                if (s.autonomy > 60 && s.competence > 60 && s.phys_energy > 50 && s.inst_fairness > 50) return 'growth'; 
-                
+                // 揺らぎ・迷い (Waver): どっちつかずの状態
                 return 'waver'; 
             };
 
@@ -497,8 +533,8 @@
                         if(finalStats.inst_fairness <= 0 || finalStats.inter_fairness <= 0 || finalStats.autonomy <= 0 || finalStats.competence <= 0 || finalStats.phys_energy <= 0) {
                             reasonText = "限界を超えました。何かが完全に欠落し、部下は去りました。（原因：パラメータの枯渇）";
                         }
-                        else if(finalStats.psych_load > 85) reasonText = "「もう無理です...会社に来るのが怖くて...」休職願が出されました。（原因：心理的負荷の限界）";
-                        else if(finalStats.phys_energy < 15) reasonText = "深夜、部下がオフィスで倒れ救急搬送されました。（原因：身体的エネルギーの枯渇）";
+                        else if(finalStats.psych_load >= 90) reasonText = "「もう無理です...会社に来るのが怖くて...」休職願が出されました。（原因：心理的負荷の限界）";
+                        else if(finalStats.phys_energy <= 10) reasonText = "深夜、部下がオフィスで倒れ救急搬送されました。（原因：身体的エネルギーの枯渇）";
                         else reasonText = "「この会社には未来がありません。」退職届が叩きつけられました。（原因：公平性の欠如）";
                         break;
                     case 'quiet_quit_end':
