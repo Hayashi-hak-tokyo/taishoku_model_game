@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>感情モデルマネジメントゲーム</title>
+    <title>感情マネジメントゲーム</title>
     <!-- Tailwind CSS (デザイン用) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- React & ReactDOM (ゲームエンジン) -->
@@ -32,15 +32,14 @@
         }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen flex items-center justify-center p-2">
+<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
 
-    <div id="root"></div>
+    <div id="root" class="w-full max-w-5xl h-[90vh]"></div>
 
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
         // --- アイコンコンポーネント (SVG) ---
-        // 外部ライブラリを使わず、直接描画して軽量化
         const IconBase = ({ children, color = "currentColor", size = 24, ...props }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>{children}</svg>
         );
@@ -369,10 +368,10 @@
             );
 
             return (
-                <div className="max-w-xl w-full bg-white rounded-xl shadow-2xl overflow-hidden border border-slate-200 flex flex-col max-h-[95vh]">
+                <div className="w-full max-w-5xl h-full md:h-auto bg-white rounded-xl shadow-2xl overflow-hidden border border-slate-200 flex flex-col">
                     
                     {/* Header */}
-                    <div className="bg-slate-800 text-white p-3 flex justify-between items-center shrink-0">
+                    <div className="bg-slate-800 text-white p-4 flex justify-between items-center shrink-0">
                         <h1 className="font-bold text-lg flex items-center gap-2">
                             <Briefcase size={20} />
                             組織心理学サバイバル
@@ -384,10 +383,10 @@
 
                     {/* Start Screen */}
                     {gameState === 'start' && (
-                        <div className="p-8 text-center overflow-y-auto">
-                            <div className="mb-6 text-6xl">🏢</div>
-                            <h2 className="text-2xl font-bold mb-4">マネジメント・サバイバル</h2>
-                            <p className="text-gray-600 mb-8 leading-relaxed text-sm">
+                        <div className="p-8 text-center flex-1 flex flex-col justify-center items-center">
+                            <div className="mb-6 text-7xl">🏢</div>
+                            <h2 className="text-3xl font-bold mb-4">マネジメント・サバイバル</h2>
+                            <p className="text-gray-600 mb-8 leading-relaxed text-base max-w-lg">
                                 あなたはマネージャーとして、<br/>
                                 部下の6つの心理パラメータを管理します。<br/><br/>
                                 <strong>部下の心理は常に変化（回転）します。</strong><br/>
@@ -396,32 +395,20 @@
                             </p>
                             <button 
                                 onClick={startGame}
-                                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-lg shadow-lg"
+                                className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-lg text-lg transition-transform transform active:scale-95"
                             >
                                 マネジメント開始（初期ステータス生成）
                             </button>
                         </div>
                     )}
 
-                    {/* Main Game Screen */}
+                    {/* Main Game Screen (Split Layout) */}
                     {gameState === 'playing' && (
-                        <div className="flex flex-col h-full overflow-hidden relative">
-                            <div className="p-2 overflow-y-auto flex-1 flex flex-col items-center">
-                                
-                                {/* メッセージエリア */}
-                                <div className="w-full mb-2 px-2 z-20 relative">
-                                    <div className="bg-slate-100 px-4 py-3 rounded-lg text-sm text-slate-700 w-full text-center border border-slate-200 min-h-[3.5rem] flex items-center justify-center shadow-inner italic">
-                                        {lastMessage}
-                                    </div>
-                                    {eventMessage && (
-                                        <div className="bg-yellow-50 px-4 py-2 mt-1 rounded text-xs text-yellow-800 text-center border border-yellow-200 animate-pulse font-bold">
-                                            ⚡ {eventMessage.title}: {eventMessage.desc}
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* 円環状ステータスUI - 回転アニメーション対応 */}
-                                <div className="relative w-[360px] h-[360px] mb-2 shrink-0 mx-auto flex items-center justify-center overflow-hidden">
+                        <div className="flex flex-col md:flex-row h-full overflow-hidden">
+                            
+                            {/* 左カラム: ステータス表示エリア (円環) */}
+                            <div className="flex-1 bg-slate-50/50 flex items-center justify-center p-6 relative overflow-hidden border-b md:border-b-0 md:border-r border-slate-200">
+                                <div className="relative w-[400px] h-[400px] flex items-center justify-center">
                                     
                                     {/* 回転するコンテナ */}
                                     <div 
@@ -429,12 +416,12 @@
                                         style={{ transform: `rotate(${rotationAngle}deg)` }}
                                     >
                                         {/* 軌道の点線円 */}
-                                        <div className="absolute w-[300px] h-[300px] rounded-full border-2 border-dashed border-slate-300"></div>
+                                        <div className="absolute w-[340px] h-[340px] rounded-full border-2 border-dashed border-slate-300"></div>
 
                                         {/* 周囲のステータス円 */}
                                         {MENTAL_STATES.map((state, index) => {
                                             const angle = index * (360 / MENTAL_STATES.length);
-                                            const radius = 150; // 円の半径
+                                            const radius = 170; // 円の半径拡大
                                             const isActive = state.id === currentMentalStateId;
 
                                             return (
@@ -444,10 +431,9 @@
                                                     style={{
                                                         top: '50%',
                                                         left: '50%',
-                                                        marginTop: '-3rem', // w-24 h-24 の半分
+                                                        marginTop: '-3rem',
                                                         marginLeft: '-3rem',
                                                         transform: `rotate(${angle}deg) translate(0, -${radius}px) rotate(${-angle}deg) rotate(${-rotationAngle}deg)` 
-                                                        // 最後のrotateは、親の回転を打ち消して文字を正立させるため
                                                     }}
                                                 >
                                                     <div 
@@ -461,7 +447,7 @@
                                                         {state.subLabel && <span className="text-[10px] text-slate-500 mt-1">{state.subLabel}</span>}
                                                     </div>
                                                     {isActive && (
-                                                        <div className="absolute -bottom-8 bg-slate-800 text-white text-[10px] px-2 py-1 rounded shadow animate-bounce whitespace-nowrap z-20">
+                                                        <div className="absolute -bottom-8 bg-slate-800 text-white text-[10px] px-2 py-1 rounded shadow animate-bounce whitespace-nowrap z-20 hidden md:block">
                                                             現在: {state.label}
                                                         </div>
                                                     )}
@@ -471,7 +457,7 @@
                                     </div>
 
                                     {/* 中央の黒円（パラメータコンテナ - 回転しない） */}
-                                    <div className="absolute w-60 h-60 bg-slate-800 rounded-full flex flex-col justify-center px-6 shadow-2xl z-30 border-4 border-slate-600">
+                                    <div className="absolute w-64 h-64 bg-slate-800 rounded-full flex flex-col justify-center px-8 shadow-2xl z-30 border-4 border-slate-600">
                                         <ProgressBar label="公平性(制度)" value={stats.inst_fairness} change={parameterChanges.inst_fairness} color="#60A5FA" />
                                         <ProgressBar label="公平性(対人)" value={stats.inter_fairness} change={parameterChanges.inter_fairness} color="#818CF8" />
                                         <ProgressBar label="裁量感" value={stats.autonomy} change={parameterChanges.autonomy} color="#4ADE80" />
@@ -481,51 +467,75 @@
                                     </div>
 
                                 </div>
-
-                                {/* アクションボタン */}
-                                <div className="w-full space-y-2 mt-2 z-20 relative">
-                                    <h3 className="text-xs font-bold text-gray-500 mb-1 flex items-center gap-2">
-                                        <Briefcase size={14} />
-                                        今週のアクション（ランダム選出）
-                                    </h3>
-                                    <div className="grid grid-cols-1 gap-2">
-                                        {currentActions.map((action) => (
-                                            <button
-                                                key={action.id}
-                                                onClick={() => handleAction(action)}
-                                                className="w-full text-left bg-white hover:bg-slate-50 border-2 border-slate-200 hover:border-blue-400 p-2.5 rounded-xl transition-all duration-200 group relative overflow-hidden shadow-sm active:scale-[0.98]"
-                                            >
-                                                <div className="flex justify-between items-center relative z-10">
-                                                    <div className="flex-1 min-w-0">
-                                                        <span className="font-bold text-slate-800 text-sm block truncate">{action.label}</span>
-                                                        <span className="text-[10px] text-slate-500 block truncate">{action.desc}</span>
-                                                    </div>
-                                                    <div className="ml-2 bg-slate-50 text-slate-400 p-1.5 rounded-full group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors shrink-0">
-                                                        {action.type === ActionType.COMMUNICATION && <MessageCircle size={16} />}
-                                                        {action.type === ActionType.WORK && <Briefcase size={16} />}
-                                                        {action.type === ActionType.REST && <Coffee size={16} />}
-                                                    </div>
-                                                </div>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
                             </div>
 
-                            {/* 履歴ログ */}
-                            <div className="bg-slate-100 border-t border-slate-200 p-2 h-20 shrink-0 z-20 relative">
-                                <h4 className="text-[10px] font-bold text-gray-500 mb-1 flex items-center gap-1">
-                                    <History size={10} />
-                                    履歴
-                                </h4>
-                                <div className="h-full overflow-y-auto pb-4 text-[10px] space-y-1 pr-1 custom-scrollbar">
-                                    {history.map((log, i) => (
-                                        <div key={i} className={`p-1 rounded ${log.type === 'event' ? 'bg-yellow-100 text-yellow-800' : 'bg-white text-gray-600 border border-slate-200'}`}>
-                                            <span className="font-mono text-gray-400 mr-1">W{log.week}</span>
-                                            {log.text}
+                            {/* 右カラム: 操作エリア */}
+                            <div className="flex-1 flex flex-col min-w-0 bg-white z-20">
+                                <div className="flex-1 overflow-y-auto p-6 flex flex-col justify-center">
+                                    
+                                    {/* メッセージエリア */}
+                                    <div className="w-full mb-6">
+                                        <div className="bg-slate-100 px-6 py-4 rounded-xl text-base text-slate-700 w-full text-center border border-slate-200 min-h-[4rem] flex items-center justify-center shadow-inner italic relative">
+                                            <span className="absolute top-2 left-2 text-3xl text-slate-200">"</span>
+                                            {lastMessage}
+                                            <span className="absolute bottom-2 right-2 text-3xl text-slate-200">"</span>
                                         </div>
-                                    ))}
-                                    <div ref={logsEndRef} />
+                                        {eventMessage && (
+                                            <div className="bg-yellow-50 px-4 py-3 mt-2 rounded-lg text-sm text-yellow-800 text-center border border-yellow-200 animate-pulse font-bold flex items-center justify-center gap-2">
+                                                <Zap size={16} /> {eventMessage.title}: {eventMessage.desc}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* アクションボタン */}
+                                    <div className="w-full space-y-3">
+                                        <h3 className="text-sm font-bold text-gray-500 mb-2 flex items-center gap-2">
+                                            <Briefcase size={16} />
+                                            今週のアクション（ランダム選出）
+                                        </h3>
+                                        <div className="grid grid-cols-1 gap-3">
+                                            {currentActions.map((action) => (
+                                                <button
+                                                    key={action.id}
+                                                    onClick={() => handleAction(action)}
+                                                    className="w-full text-left bg-white hover:bg-blue-50 border-2 border-slate-200 hover:border-blue-500 p-4 rounded-xl transition-all duration-200 group relative overflow-hidden shadow-sm active:scale-[0.99]"
+                                                >
+                                                    <div className="flex justify-between items-center relative z-10">
+                                                        <div className="flex-1 min-w-0 pr-4">
+                                                            <span className="font-bold text-slate-800 text-base block mb-1">{action.label}</span>
+                                                            <span className="text-xs text-slate-500 block">{action.desc}</span>
+                                                        </div>
+                                                        <div className="bg-slate-50 text-slate-400 p-3 rounded-full group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors shrink-0">
+                                                            {action.type === ActionType.COMMUNICATION && <MessageCircle size={20} />}
+                                                            {action.type === ActionType.WORK && <Briefcase size={20} />}
+                                                            {action.type === ActionType.REST && <Coffee size={20} />}
+                                                        </div>
+                                                    </div>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {/* 履歴ログ (右下) */}
+                                <div className="bg-slate-50 border-t border-slate-200 p-3 h-40 shrink-0">
+                                    <h4 className="text-xs font-bold text-gray-500 mb-2 flex items-center gap-1">
+                                        <History size={12} />
+                                        活動履歴
+                                    </h4>
+                                    <div className="h-full overflow-y-auto pb-6 text-xs space-y-2 pr-2 custom-scrollbar">
+                                        {history.length === 0 ? (
+                                            <p className="text-gray-400 italic text-center py-4">履歴はまだありません</p>
+                                        ) : (
+                                            history.map((log, i) => (
+                                                <div key={i} className={`p-2 rounded border ${log.type === 'event' ? 'bg-yellow-50 border-yellow-200 text-yellow-800' : 'bg-white border-slate-200 text-gray-700'}`}>
+                                                    <span className="font-mono font-bold text-gray-400 mr-2 border-r border-gray-200 pr-2">W{log.week}</span>
+                                                    {log.text}
+                                                </div>
+                                            ))
+                                        )}
+                                        <div ref={logsEndRef} />
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -533,29 +543,29 @@
 
                     {/* Game Over / Victory Screen */}
                     {(gameState === 'gameover' || gameState === 'victory') && (
-                        <div className={`p-8 text-center h-full overflow-y-auto flex flex-col justify-center ${gameState === 'victory' ? 'bg-blue-50' : 'bg-red-50'}`}>
+                        <div className={`p-12 text-center flex-1 flex flex-col justify-center items-center ${gameState === 'victory' ? 'bg-blue-50' : 'bg-red-50'}`}>
                             {gameState === 'victory' ? (
                                 <>
-                                    <Award size={64} className="mx-auto text-yellow-500 mb-4" />
-                                    <h2 className="text-xl font-bold text-blue-900 mb-2">QUARTER COMPLETE!</h2>
-                                    <p className="text-blue-700 mb-6 text-sm">マネジメント成功です</p>
+                                    <Award size={80} className="mx-auto text-yellow-500 mb-6" />
+                                    <h2 className="text-3xl font-bold text-blue-900 mb-3">QUARTER COMPLETE!</h2>
+                                    <p className="text-blue-700 mb-8 text-lg">マネジメント成功です。素晴らしいリーダーシップでした！</p>
                                 </>
                             ) : (
                                 <>
-                                    <UserMinus size={64} className="mx-auto text-red-500 mb-4" />
-                                    <h2 className="text-xl font-bold text-red-800 mb-2">GAME OVER</h2>
-                                    <div className="bg-white p-4 rounded-lg shadow-sm border border-red-100 mb-8 text-left relative mt-6">
-                                        <div className="absolute -top-3 left-4 bg-red-100 text-red-800 text-xs px-2 py-1 rounded">退職/休職届</div>
-                                        <p className="text-gray-700 font-serif italic text-sm">{gameOverReason}</p>
+                                    <UserMinus size={80} className="mx-auto text-red-500 mb-6" />
+                                    <h2 className="text-3xl font-bold text-red-800 mb-3">GAME OVER</h2>
+                                    <div className="bg-white p-6 rounded-xl shadow-md border border-red-100 mb-10 text-left relative mt-4 max-w-lg w-full">
+                                        <div className="absolute -top-3 left-6 bg-red-100 text-red-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">退職/休職届</div>
+                                        <p className="text-gray-700 font-serif italic text-lg leading-relaxed mt-2">"{gameOverReason}"</p>
                                     </div>
                                 </>
                             )}
                             
                             <button 
                                 onClick={startGame}
-                                className={`w-full text-white font-bold py-3 rounded-lg shadow flex items-center justify-center gap-2 transition ${gameState === 'victory' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-slate-800 hover:bg-slate-900'}`}
+                                className={`px-8 py-4 text-white font-bold rounded-lg shadow-lg text-lg transition flex items-center gap-2 ${gameState === 'victory' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-slate-800 hover:bg-slate-900'}`}
                             >
-                                <RefreshCw size={18} />
+                                <RefreshCw size={20} />
                                 {gameState === 'victory' ? '次の期へ' : '再挑戦（初期値ランダム）'}
                             </button>
                         </div>
