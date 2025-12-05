@@ -58,17 +58,19 @@
         // --- ゲーム定数 & データ ---
         const MAX_WEEKS = 12;
 
+        // 状態配列の順序を変更：時計回りに「良くなる」順序に配置
+        // これにより、悪化(左移動)時は盤面が時計回り、改善(右移動)時は盤面が反時計回りに回る
         const MENTAL_STATES = [
-            { id: 'conflict', label: '葛藤・抵抗', subLabel: '(怒りと対立)', colorBg: '#FDE047', colorBorder: '#EAB308' },
-            { id: 'resignation', label: '諦め・適応', subLabel: '', colorBg: '#BBF7D0', colorBorder: '#86EFAC' },
-            { id: 'quiet_quit', label: '静かな退職', subLabel: '(危険域)', colorBg: '#A5F3FC', colorBorder: '#67E8F9' },
+            { id: 'turnover', label: '退職・転出', subLabel: '(即死)', colorBg: '#C4B5FD', colorBorder: '#A78BFA' }, // 最悪
             { id: 'apathy', label: '無関心', subLabel: '(危険域)', colorBg: '#93C5FD', colorBorder: '#60A5FA' },
-            { id: 'turnover', label: '退職・転出', subLabel: '(即死)', colorBg: '#C4B5FD', colorBorder: '#A78BFA' },
-            { id: 'growth', label: '充実・成長', subLabel: '(理想)', colorBg: '#DCA598', colorBorder: '#B97A6D' },
+            { id: 'quiet_quit', label: '静かな退職', subLabel: '(危険域)', colorBg: '#A5F3FC', colorBorder: '#67E8F9' },
+            { id: 'resignation', label: '諦め・適応', subLabel: '', colorBg: '#BBF7D0', colorBorder: '#86EFAC' },
+            { id: 'conflict', label: '葛藤・抵抗', subLabel: '(怒りと対立)', colorBg: '#FDE047', colorBorder: '#EAB308' },
             { id: 'waver', label: '揺らぎ・迷い', subLabel: '', colorBg: '#E7CBA9', colorBorder: '#D4A373' },
+            { id: 'growth', label: '充実・成長', subLabel: '(理想)', colorBg: '#DCA598', colorBorder: '#B97A6D' }, // 最高
         ];
 
-        // 週ごとの環境状況（フレーバーテキスト）
+        // 週ごとの環境状況
         const WEEKLY_SITUATIONS = [
             { text: "決算前の繁忙期で、オフィス全体がピリピリしている。", type: "busy" },
             { text: "業界最大手の不祥事がニュースになり、顧客対応に追われている。", type: "trouble" },
@@ -97,13 +99,12 @@
             WORK: 'work',
             COMMUNICATION: 'comm',
             REST: 'rest',
-            WAIT: 'wait' // 新規追加
+            WAIT: 'wait'
         };
 
         const pickMsg = (messages) => messages[Math.floor(Math.random() * messages.length)];
 
-        // アクション定義を更新：effectが結果タイプも返すように変更
-        // 変動幅を ±10〜20 程度に拡大してドラスティックに
+        // アクション定義
         const ACTIONS = [
             {
                 id: 'praise',
@@ -111,7 +112,6 @@
                 type: ActionType.COMMUNICATION,
                 desc: '具体的な成果を承認する',
                 effect: (stats) => {
-                    // 20%の確率で「裏目」に出る（プレッシャー、お世辞と捉えられる）
                     if (Math.random() < 0.2) {
                         return { 
                             diff: { inst_fairness: -5, inter_fairness: -10, competence: -5, psych_load: +20, phys_energy: 0 },
@@ -139,7 +139,6 @@
                 type: ActionType.WORK,
                 desc: '改善点を指摘し修正させる',
                 effect: (stats) => {
-                    // 信頼関係(対人公平性)が高くないと50%で失敗するハイリスク行動
                     const successRate = stats.inter_fairness > 60 ? 0.7 : 0.3;
                     if (Math.random() < successRate) {
                         return {
@@ -169,7 +168,6 @@
                 type: ActionType.WORK,
                 desc: '権限委譲して見守る',
                 effect: (stats) => {
-                    // 30%で「丸投げ」と捉えられる（負荷激増）
                     if (Math.random() < 0.3) {
                         return {
                             diff: { inst_fairness: -10, inter_fairness: -10, autonomy: +5, competence: -10, psych_load: +30, phys_energy: -20 },
@@ -197,16 +195,15 @@
                 type: ActionType.WORK,
                 desc: '進捗を細部まで管理する',
                 effect: (stats) => {
-                    // 20%で逆に「安心感」を与えることもある
                     if (Math.random() < 0.2) {
                         return {
                             diff: { inst_fairness: +10, inter_fairness: +10, autonomy: -10, competence: 0, psych_load: -10, phys_energy: -5 },
-                            result: 'good' // 良い方の意外な結果
+                            result: 'good'
                         };
                     }
                     return {
                         diff: { inst_fairness: +10, inter_fairness: -5, autonomy: -30, competence: -10, psych_load: +10, phys_energy: -10 },
-                        result: 'bad' // 基本はネガティブ
+                        result: 'bad' 
                     };
                 },
                 getMessages: (result) => result === 'good' ? [
@@ -224,7 +221,6 @@
                 type: ActionType.COMMUNICATION,
                 desc: '不満やキャリアの相談に乗る',
                 effect: (stats) => {
-                    // 10%で「解決策を示さないことに失望」される
                     if (Math.random() < 0.1) {
                         return {
                             diff: { inst_fairness: -15, inter_fairness: -5, autonomy: 0, competence: 0, psych_load: +5, phys_energy: 0 },
@@ -251,7 +247,6 @@
                 type: ActionType.REST,
                 desc: '早帰りを推奨する',
                 effect: (stats) => {
-                    // 20%で「仕事が終わらないのに帰らされるストレス」
                     if (Math.random() < 0.2) {
                         return {
                             diff: { inst_fairness: 0, inter_fairness: -5, autonomy: -10, competence: 0, psych_load: +15, phys_energy: +5 },
@@ -278,7 +273,6 @@
                 type: ActionType.REST,
                 desc: '腹を割って話す',
                 effect: (stats) => {
-                    // 50%で失敗するギャンブル
                     if (Math.random() < 0.5) {
                         return {
                             diff: { inst_fairness: 0, inter_fairness: -15, autonomy: 0, competence: 0, psych_load: +15, phys_energy: -20 },
@@ -300,7 +294,6 @@
                     "「すいません、ちょっと酔いが回っちゃって...」部下を疲弊させてしまっただけだった。"
                 ]
             },
-            // 新規追加アクション：そっとしておく
             {
                 id: 'wait',
                 label: 'そっとしておく',
@@ -309,19 +302,16 @@
                 effect: (stats) => {
                     const rand = Math.random();
                     if (rand < 0.3) {
-                        // 良い結果：自律的回復
                         return {
                             diff: { inst_fairness: 0, inter_fairness: 0, autonomy: +10, competence: +5, psych_load: -10, phys_energy: +10 },
                             result: 'good'
                         };
                     } else if (rand < 0.6) {
-                        // 悪い結果：放置・孤立
                         return {
                             diff: { inst_fairness: -5, inter_fairness: -10, autonomy: 0, competence: -5, psych_load: +10, phys_energy: 0 },
                             result: 'bad'
                         };
                     } else {
-                        // 変化なし
                         return {
                             diff: { inst_fairness: 0, inter_fairness: 0, autonomy: 0, competence: 0, psych_load: 0, phys_energy: 0 },
                             result: 'none'
@@ -374,21 +364,21 @@
                 logsEndRef.current?.scrollIntoView({ behavior: "smooth" });
             }, [history]);
 
-            // 状態判定ロジック
+            // 状態判定ロジック（0判定を追加）
             const determineMentalStateId = (s) => {
-                // 即死条件 (Turnover)
-                if (s.psych_load > 85 || s.phys_energy < 15 || s.inst_fairness < 15 || s.inter_fairness < 15) return 'turnover'; 
+                // 1. パラメータ枯渇による強制退職（0になったら即死）
+                if (s.inst_fairness <= 0 || s.inter_fairness <= 0 || s.autonomy <= 0 || s.competence <= 0 || s.phys_energy <= 0) return 'turnover';
+
+                // 2. 通常の判定
+                if (s.psych_load > 85 || s.phys_energy < 15) return 'turnover'; 
                 
-                // ネガティブ状態
                 if (s.inst_fairness < 40 && s.inter_fairness < 40 && s.phys_energy > 40) return 'conflict';
                 if (s.autonomy < 40 && s.psych_load < 60) return 'resignation'; 
-                if (s.competence < 40 && s.autonomy < 40) return 'quiet_quit'; // 静かな退職
-                if (s.phys_energy < 40 && s.competence < 40) return 'apathy'; // 無関心
+                if (s.competence < 40 && s.autonomy < 40) return 'quiet_quit'; 
+                if (s.phys_energy < 40 && s.competence < 40) return 'apathy'; 
                 
-                // ポジティブ状態
                 if (s.autonomy > 60 && s.competence > 60 && s.phys_energy > 50 && s.inst_fairness > 50) return 'growth'; 
                 
-                // その他
                 return 'waver'; 
             };
 
@@ -462,8 +452,9 @@
             };
 
             const checkGameState = (currentStats, currentWeek) => {
-                // 1. 即死判定 (Turnoverになった瞬間)
                 const currentState = determineMentalStateId(currentStats);
+                
+                // 1. 即死判定 (Turnoverになった瞬間)
                 if (currentState === 'turnover') {
                     finishGame('turnover', currentStats);
                     return;
@@ -471,8 +462,8 @@
 
                 // 2. 期間終了判定
                 if (currentWeek >= MAX_WEEKS) {
-                    // 終了時に「静かな退職」または「無関心」の場合は敗北
-                    if (currentState === 'quiet_quit' || currentState === 'apathy') {
+                    // 終了時に「静かな退職」「無関心」「退職・転出」の場合は敗北
+                    if (['quiet_quit', 'apathy', 'turnover'].includes(currentState)) {
                         finishGame('quiet_quit_end', currentStats);
                     } else {
                         finishGame('victory', currentStats);
@@ -488,7 +479,6 @@
                 let reasonText = "";
                 let calculatedScore = 0;
 
-                // スコア計算 (Victoryのみ加算)
                 if (reason === 'victory') {
                     const total = 
                         finalStats.inst_fairness + 
@@ -504,8 +494,10 @@
 
                 switch(reason) {
                     case 'turnover': 
-                        // 具体的な原因をパラメータから推測
-                        if(finalStats.psych_load > 85) reasonText = "「もう無理です...会社に来るのが怖くて...」休職願が出されました。（原因：心理的負荷の限界）";
+                        if(finalStats.inst_fairness <= 0 || finalStats.inter_fairness <= 0 || finalStats.autonomy <= 0 || finalStats.competence <= 0 || finalStats.phys_energy <= 0) {
+                            reasonText = "限界を超えました。何かが完全に欠落し、部下は去りました。（原因：パラメータの枯渇）";
+                        }
+                        else if(finalStats.psych_load > 85) reasonText = "「もう無理です...会社に来るのが怖くて...」休職願が出されました。（原因：心理的負荷の限界）";
                         else if(finalStats.phys_energy < 15) reasonText = "深夜、部下がオフィスで倒れ救急搬送されました。（原因：身体的エネルギーの枯渇）";
                         else reasonText = "「この会社には未来がありません。」退職届が叩きつけられました。（原因：公平性の欠如）";
                         break;
@@ -575,7 +567,7 @@
                                 あなたはマネージャーとして、部下の6つの心理パラメータを管理します。<br/>
                                 <br/>
                                 <strong>⚠️ ゲームオーバー条件:</strong><br/>
-                                1. パラメータが悪化し「退職・転出」状態になった瞬間<br/>
+                                1. いずれかのパラメータが0になる、または「退職・転出」状態になる<br/>
                                 2. 期間終了時に「静かな退職」または「無関心」状態であること<br/>
                                 <br/>
                                 些細な選択が命取りになります。慎重に、時に大胆に指示を出してください。
