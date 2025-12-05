@@ -58,16 +58,16 @@
         // --- ゲーム定数 & データ ---
         const MAX_WEEKS = 12;
 
-        // 状態配列の順序を変更：時計回りに「良くなる」順序に配置
-        // これにより、悪化(左移動)時は盤面が時計回り、改善(右移動)時は盤面が反時計回りに回る
+        // 状態配列の順序と色をスクリーンショットに合わせて更新
+        // 時計回り順序: 充実・成長(12時) → 揺らぎ・迷い → 葛藤・抵抗 → 諦め・適応 → 静かな退職 → 無関心 → 退職・転出
         const MENTAL_STATES = [
-            { id: 'turnover', label: '退職・転出', subLabel: '(即死)', colorBg: '#C4B5FD', colorBorder: '#A78BFA' }, // 最悪
-            { id: 'apathy', label: '無関心', subLabel: '(危険域)', colorBg: '#93C5FD', colorBorder: '#60A5FA' },
-            { id: 'quiet_quit', label: '静かな退職', subLabel: '(危険域)', colorBg: '#A5F3FC', colorBorder: '#67E8F9' },
-            { id: 'resignation', label: '諦め・適応', subLabel: '', colorBg: '#BBF7D0', colorBorder: '#86EFAC' },
-            { id: 'conflict', label: '葛藤・抵抗', subLabel: '(怒りと対立)', colorBg: '#FDE047', colorBorder: '#EAB308' },
-            { id: 'waver', label: '揺らぎ・迷い', subLabel: '', colorBg: '#E7CBA9', colorBorder: '#D4A373' },
-            { id: 'growth', label: '充実・成長', subLabel: '(理想)', colorBg: '#DCA598', colorBorder: '#B97A6D' }, // 最高
+            { id: 'growth', label: '充実・成長', subLabel: '', colorBg: '#D46B55', colorBorder: '#B95846' }, // 赤/オレンジ系
+            { id: 'waver', label: '揺らぎ・迷い', subLabel: '', colorBg: '#E6CBA9', colorBorder: '#C9AF8D' }, // ベージュ系
+            { id: 'conflict', label: '葛藤・抵抗', subLabel: '(怒りと対立)', colorBg: '#F3E5AB', colorBorder: '#D6C890' }, // 黄色/クリーム系
+            { id: 'resignation', label: '諦め・適応', subLabel: '', colorBg: '#BDDDB2', colorBorder: '#9FC194' }, // 緑系
+            { id: 'quiet_quit', label: '静かな退職', subLabel: '', colorBg: '#B3DFD7', colorBorder: '#93BFB7' }, // 青緑/ミント系
+            { id: 'apathy', label: '無関心', subLabel: '', colorBg: '#9BBBE3', colorBorder: '#7E9EC6' }, // 青系
+            { id: 'turnover', label: '退職・転出', subLabel: '', colorBg: '#9B88D6', colorBorder: '#7D6AB8' }, // 紫系
         ];
 
         // 週ごとの環境状況
