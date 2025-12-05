@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>部下とのコミュニケーションゲーム</title>
+    <title>部下マネジメントサバイバル</title>
     <!-- Tailwind CSS (デザイン用) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- React & ReactDOM (ゲームエンジン) -->
@@ -52,6 +52,7 @@
         const RefreshCw = (p) => <IconBase {...p}><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></IconBase>;
         const TrendingUp = (p) => <IconBase {...p}><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></IconBase>;
         const Zap = (p) => <IconBase {...p}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></IconBase>;
+        const Eye = (p) => <IconBase {...p}><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></IconBase>;
 
         // --- ゲーム定数 & データ ---
         const MAX_WEEKS = 12;
@@ -94,31 +95,41 @@
         const ActionType = {
             WORK: 'work',
             COMMUNICATION: 'comm',
-            REST: 'rest'
+            REST: 'rest',
+            WAIT: 'wait' // 新規追加
         };
 
         const pickMsg = (messages) => messages[Math.floor(Math.random() * messages.length)];
 
-        // アクションメッセージに「地の文」や「状況描写」を追加
+        // アクション定義を更新：effectが結果タイプも返すように変更
+        // 変動幅を ±10〜20 程度に拡大してドラスティックに
         const ACTIONS = [
             {
                 id: 'praise',
                 label: '成果を褒める',
                 type: ActionType.COMMUNICATION,
                 desc: '具体的な成果を承認する',
-                effect: (stats) => ({
-                    inst_fairness: +2, inter_fairness: +5, autonomy: 0, competence: +10, psych_load: -5, phys_energy: 0
-                }),
-                getMessages: (success) => success ? [
+                effect: (stats) => {
+                    // 20%の確率で「裏目」に出る（プレッシャー、お世辞と捉えられる）
+                    if (Math.random() < 0.2) {
+                        return { 
+                            diff: { inst_fairness: -5, inter_fairness: -10, competence: -5, psych_load: +20, phys_energy: 0 },
+                            result: 'bad'
+                        };
+                    }
+                    return { 
+                        diff: { inst_fairness: +5, inter_fairness: +15, autonomy: 0, competence: +20, psych_load: -10, phys_energy: 0 },
+                        result: 'good'
+                    };
+                },
+                getMessages: (result) => result === 'good' ? [
                     "「ありがとうございます！そこ、こだわったんです！」部下は嬉しそうに頭をかいた。",
                     "「部長にそう言ってもらえると、自信になります！」声色が明るくなった。",
-                    "「やった！次はもっといいもの作りますね！」モチベーションが目に見えて上がったようだ。",
-                    "部下の表情がパッと華やぎ、デスクに戻る足取りも軽い。",
-                    "周りの社員も頷いており、チームの良い雰囲気作りに繋がった。"
+                    "「やった！次はもっといいもの作りますね！」モチベーションが爆上がりしたようだ。"
                 ] : [
-                    "「あ、はい...ありがとうございます」反応は薄く、すぐに視線を逸らされた。",
-                    "「はあ...（もっと別のところを見てほしいんだけどな...）」不満げな空気が漂う。",
-                    "褒めたものの、心に響いていないようだ。タイミングが悪かったか..."
+                    "「あ、はい...プレッシャーですね...」かえって緊張させてしまった。",
+                    "「お世辞はいいですよ...」心に壁を作られてしまったようだ。",
+                    "「結果しか見てないんですね...」プロセスの苦労を無視されたと感じたようだ。"
                 ]
             },
             {
@@ -127,21 +138,28 @@
                 type: ActionType.WORK,
                 desc: '改善点を指摘し修正させる',
                 effect: (stats) => {
-                    const isTrusted = stats.inter_fairness > 60;
-                    return {
-                        inst_fairness: +2, inter_fairness: isTrusted ? 0 : -10, autonomy: -5, competence: isTrusted ? +5 : -10, psych_load: +15, phys_energy: -5
-                    };
+                    // 信頼関係(対人公平性)が高くないと50%で失敗するハイリスク行動
+                    const successRate = stats.inter_fairness > 60 ? 0.7 : 0.3;
+                    if (Math.random() < successRate) {
+                        return {
+                            diff: { inst_fairness: +15, inter_fairness: 0, autonomy: -5, competence: +15, psych_load: +20, phys_energy: -10 },
+                            result: 'good'
+                        };
+                    } else {
+                        return {
+                            diff: { inst_fairness: 0, inter_fairness: -30, autonomy: -10, competence: -20, psych_load: +40, phys_energy: -20 },
+                            result: 'bad'
+                        };
+                    }
                 },
-                getMessages: (success) => success ? [
+                getMessages: (result) => result === 'good' ? [
                     "「確かにそうですね...。次からは絶対に気をつけます！」真剣な眼差しでメモを取っている。",
                     "「ご指摘ありがとうございます。すぐに修正します！」",
-                    "「うっ...痛いところを...。でも、おっしゃる通りです。」悔しそうだが、納得はしているようだ。",
-                    "ピリッとした緊張感が走ったが、部下はそれを成長の糧として受け止めたようだ。"
+                    "「うっ...痛いところを...。でも、おっしゃる通りです。」成長の糧として受け止めたようだ。"
                 ] : [
-                    "「すいません...（なんで自分ばっかり...）」部下は唇を噛み締め、俯いている。",
+                    "「すいません...（なんで自分ばっかり...）」部下は唇を噛み締め、深く傷ついたようだ。",
                     "「...はい、わかりました。」納得いかない表情で、小さなため息が聞こえた。",
-                    "「（また怒られた...もう嫌だな...）」オフィスの空気が重くなり、周囲も気まずそうだ。",
-                    "指導の声がフロアに響き、部下は委縮してしまった。"
+                    "「（また怒られた...もう嫌だな...）」完全に委縮し、やる気を失わせてしまった。"
                 ]
             },
             {
@@ -149,15 +167,27 @@
                 label: '仕事を任せる',
                 type: ActionType.WORK,
                 desc: '権限委譲して見守る',
-                effect: (stats) => ({
-                    inst_fairness: 0, inter_fairness: +2, autonomy: +15, competence: +5, psych_load: +10, phys_energy: -10
-                }),
-                getMessages: (success) => [
+                effect: (stats) => {
+                    // 30%で「丸投げ」と捉えられる（負荷激増）
+                    if (Math.random() < 0.3) {
+                        return {
+                            diff: { inst_fairness: -10, inter_fairness: -10, autonomy: +5, competence: -10, psych_load: +30, phys_energy: -20 },
+                            result: 'bad'
+                        };
+                    }
+                    return {
+                        diff: { inst_fairness: 0, inter_fairness: +5, autonomy: +25, competence: +15, psych_load: +15, phys_energy: -15 },
+                        result: 'good'
+                    };
+                },
+                getMessages: (result) => result === 'good' ? [
                     "「これ、僕がやっていいんですか？ やります！」目を輝かせて資料を受け取った。",
-                    "「責任重大ですね...でも、チャンスだと思って頑張ります！」",
-                    "「任せてください！期待以上の結果を出してみせますよ。」",
-                    "部下は少し不安そうだが、任されたことへの意気込みを感じる。",
-                    "「わかりました」短い返事だが、PCに向かう背中には気合が入っている。"
+                    "「責任重大ですね...でも、チャンスだと思って頑張ります！」意気に感じている。",
+                    "「任せてください！期待以上の結果を出してみせますよ。」"
+                ] : [
+                    "「え、これ僕がやるんですか...？」明らかに困惑している。",
+                    "「丸投げですか...わかりました...」不満げに資料を受け取った。",
+                    "「今の業務量でこれ以上は...」キャパオーバーを起こしそうだ。"
                 ]
             },
             {
@@ -165,15 +195,26 @@
                 label: '細かく指示出し',
                 type: ActionType.WORK,
                 desc: '進捗を細部まで管理する',
-                effect: (stats) => ({
-                    inst_fairness: +5, inter_fairness: -2, autonomy: -15, competence: -5, psych_load: +5, phys_energy: -5
-                }),
-                getMessages: (success) => [
+                effect: (stats) => {
+                    // 20%で逆に「安心感」を与えることもある
+                    if (Math.random() < 0.2) {
+                        return {
+                            diff: { inst_fairness: +10, inter_fairness: +10, autonomy: -10, competence: 0, psych_load: -10, phys_energy: -5 },
+                            result: 'good' // 良い方の意外な結果
+                        };
+                    }
+                    return {
+                        diff: { inst_fairness: +10, inter_fairness: -5, autonomy: -30, competence: -10, psych_load: +10, phys_energy: -10 },
+                        result: 'bad' // 基本はネガティブ
+                    };
+                },
+                getMessages: (result) => result === 'good' ? [
+                    "「細かく見てもらえて助かります！迷わずに進めそうです。」意外にも感謝された。",
+                    "「一人だと不安だったので、指示があって安心しました。」"
+                ] : [
                     "「あ、はい。その通りに進めます...」部下の表情から生気が消えた。",
-                    "「報告ですね。ええと、今は...」監視されていると感じているようだ。",
-                    "「細部まで確認ありがとうございます...」皮肉めいた響きが混じっている。",
-                    "手取り足取り教えることでミスは防げたが、部下は窮屈そうに肩を回している。",
-                    "部下は言われた通りに動いているが、ロボットのような作業ぶりだ。"
+                    "「報告ですね。ええと、今は...」監視されていると感じ、疲弊している。",
+                    "「細部まで確認ありがとうございます...」皮肉めいた響きが混じっている。"
                 ]
             },
             {
@@ -181,31 +222,26 @@
                 label: '1on1で傾聴',
                 type: ActionType.COMMUNICATION,
                 desc: '不満やキャリアの相談に乗る',
-                effect: (stats) => ({
-                    inst_fairness: +2, inter_fairness: +10, autonomy: +2, competence: +2, psych_load: -10, phys_energy: 0
-                }),
-                getMessages: (success) => [
-                    "「実は最近、少し悩んでいて...聞いてくれますか？」部下は堰を切ったように話し始めた。",
-                    "「部長とこうして話せると、頭の中が整理できます。」",
-                    "「あー、スッキリしました！ 聞いてもらえてよかったです。」笑顔が戻った。",
-                    "会議室でじっくりと話を聞いた。部下の顔色が少し良くなった気がする。",
-                    "業務の手を止め、真摯に向き合ったことで、信頼関係が深まった感覚がある。"
-                ]
-            },
-            {
-                id: 'explain_rule',
-                label: '評価制度の説明',
-                type: ActionType.COMMUNICATION,
-                desc: '評価基準の透明性を伝える',
-                effect: (stats) => ({
-                    inst_fairness: +15, inter_fairness: +2, autonomy: 0, competence: 0, psych_load: 0, phys_energy: -2
-                }),
-                getMessages: (success) => [
-                    "「なるほど、そういう基準だったんですね。クリアになりました。」",
-                    "「何を目指せばいいか分かって、モヤモヤが晴れました！」視界が開けたようだ。",
-                    "「公平に見てくれてるって分かって安心しました。」",
-                    "ホワイトボードを使って説明した。部下は納得したように何度も頷いている。",
-                    "評価の透明性を伝えたことで、組織への不信感が和らいだようだ。"
+                effect: (stats) => {
+                    // 10%で「解決策を示さないことに失望」される
+                    if (Math.random() < 0.1) {
+                        return {
+                            diff: { inst_fairness: -15, inter_fairness: -5, autonomy: 0, competence: 0, psych_load: +5, phys_energy: 0 },
+                            result: 'bad'
+                        };
+                    }
+                    return {
+                        diff: { inst_fairness: +5, inter_fairness: +25, autonomy: +5, competence: +5, psych_load: -20, phys_energy: 0 },
+                        result: 'good'
+                    };
+                },
+                getMessages: (result) => result === 'good' ? [
+                    "「実は最近、少し悩んでいて...」部下は堰を切ったように話し始めた。",
+                    "「部長とこうして話せると、頭の中が整理できます。」表情が晴れやかになった。",
+                    "「あー、スッキリしました！ 聞いてもらえてよかったです。」信頼関係が深まった。"
+                ] : [
+                    "「聞くだけなら誰でもできますよね...」具体的な解決策がないことに失望されたようだ。",
+                    "「話しても無駄でしたね...」かえって不信感を招いてしまった。"
                 ]
             },
             {
@@ -213,15 +249,26 @@
                 label: '休息を促す',
                 type: ActionType.REST,
                 desc: '早帰りを推奨する',
-                effect: (stats) => ({
-                    inst_fairness: 0, inter_fairness: +5, autonomy: 0, competence: 0, psych_load: -10, phys_energy: +15
-                }),
-                getMessages: (success) => [
-                    "「え、いいんですか？ じゃあ、お言葉に甘えて...」部下はそそくさと帰宅の準備を始めた。",
-                    "「助かります...最近ちょっと寝不足気味だったので。」目の下のクマが少し気になる。",
-                    "「ありがとうございます！今日はゆっくり風呂に入って寝ます！」",
-                    "無理をさせずに帰した。オフィスの明かりが一つ消え、静寂が戻る。",
-                    "「お先に失礼します！」久しぶりに定時で帰る部下の背中は軽やかだ。"
+                effect: (stats) => {
+                    // 20%で「仕事が終わらないのに帰らされるストレス」
+                    if (Math.random() < 0.2) {
+                        return {
+                            diff: { inst_fairness: 0, inter_fairness: -5, autonomy: -10, competence: 0, psych_load: +15, phys_energy: +5 },
+                            result: 'bad'
+                        };
+                    }
+                    return {
+                        diff: { inst_fairness: 0, inter_fairness: +10, autonomy: 0, competence: 0, psych_load: -20, phys_energy: +30 },
+                        result: 'good'
+                    };
+                },
+                getMessages: (result) => result === 'good' ? [
+                    "「え、いいんですか？ じゃあ、お言葉に甘えて...」部下は安堵の表情で帰宅した。",
+                    "「助かります...最近ちょっと寝不足気味だったので。」体力が大幅に回復したようだ。",
+                    "「ありがとうございます！リフレッシュしてきます！」"
+                ] : [
+                    "「今帰れって言われても、明日困るだけなんですけど...」仕事を残して帰ることにストレスを感じている。",
+                    "「はあ...わかりました（家でやろう...）」結局持ち帰って仕事をするようだ。"
                 ]
             },
             {
@@ -230,22 +277,73 @@
                 type: ActionType.REST,
                 desc: '腹を割って話す',
                 effect: (stats) => {
-                    const success = Math.random() > 0.4;
+                    // 50%で失敗するギャンブル
+                    if (Math.random() < 0.5) {
+                        return {
+                            diff: { inst_fairness: 0, inter_fairness: -15, autonomy: 0, competence: 0, psych_load: +15, phys_energy: -20 },
+                            result: 'bad'
+                        };
+                    }
                     return {
-                        inst_fairness: 0, inter_fairness: success ? +10 : -5, autonomy: 0, competence: 0, psych_load: success ? -5 : +5, phys_energy: -10
+                        diff: { inst_fairness: 0, inter_fairness: +30, autonomy: 0, competence: +10, psych_load: -15, phys_energy: -10 },
+                        result: 'good'
                     };
                 },
-                getMessages: (success) => success ? [
-                    "「いやー、部長がそんな過去を持ってたとは！面白いです！」酒の席で会話が弾んだ。",
-                    "「今日誘ってもらえて良かったです。明日からまた頑張ります！」",
-                    "「ぶっちゃけますけど...部長のこと、最初は怖かったんですよ（笑）」本音がこぼれた。",
-                    "グラスを傾けながら、仕事以外の趣味の話で盛り上がった。"
+                getMessages: (result) => result === 'good' ? [
+                    "「いやー、部長がそんな過去を持ってたとは！面白いです！」酒の席で意気投合した。",
+                    "「ぶっちゃけますけど...部長のこと、最初は怖かったんですよ（笑）」本音で語り合えた。",
+                    "最高に盛り上がり、固い握手を交わして別れた。"
                 ] : [
                     "「あ、明日早いんで、そろそろ...」部下は時計をチラチラ見ている。",
-                    "「はは...そうですね...」愛想笑いを浮かべているが、目は笑っていない。",
-                    "「すいません、ちょっと酔いが回っちゃって...」気疲れさせてしまったようだ。",
-                    "沈黙が続く気まずい時間だった。無理に誘うべきではなかったかもしれない..."
+                    "「はは...そうですね...」愛想笑いの連続で、気まずい空気が流れた。",
+                    "「すいません、ちょっと酔いが回っちゃって...」部下を疲弊させてしまっただけだった。"
                 ]
+            },
+            // 新規追加アクション：そっとしておく
+            {
+                id: 'wait',
+                label: 'そっとしておく',
+                type: ActionType.WAIT,
+                desc: '何もせず様子を見る',
+                effect: (stats) => {
+                    const rand = Math.random();
+                    if (rand < 0.3) {
+                        // 良い結果：自律的回復
+                        return {
+                            diff: { inst_fairness: 0, inter_fairness: 0, autonomy: +10, competence: +5, psych_load: -10, phys_energy: +10 },
+                            result: 'good'
+                        };
+                    } else if (rand < 0.6) {
+                        // 悪い結果：放置・孤立
+                        return {
+                            diff: { inst_fairness: -5, inter_fairness: -10, autonomy: 0, competence: -5, psych_load: +10, phys_energy: 0 },
+                            result: 'bad'
+                        };
+                    } else {
+                        // 変化なし
+                        return {
+                            diff: { inst_fairness: 0, inter_fairness: 0, autonomy: 0, competence: 0, psych_load: 0, phys_energy: 0 },
+                            result: 'none'
+                        };
+                    }
+                },
+                getMessages: (result) => {
+                    if (result === 'good') return [
+                        "部下は自分のペースで仕事を進め、調子を取り戻したようだ。",
+                        "余計な干渉をしなかったことで、部下はのびのびとしている。",
+                        "少し休憩していたようだが、その後集中してタスクを片付けた。"
+                    ];
+                    if (result === 'bad') return [
+                        "部下は手持ち無沙汰にしている...「放置されている」と感じたようだ。",
+                        "困っているようだが、声をかけなかったためミスが発生してしまった。",
+                        "誰とも会話せず一日が終わり、部下は孤独を感じている。"
+                    ];
+                    return [
+                        "特に変わった様子はない。淡々と時間が過ぎた。",
+                        "部下は黙々と作業をしている。良くも悪くも変化はない。",
+                        "窓の外を眺めている...何を考えているのだろうか。"
+                    ];
+                }
             }
         ];
 
@@ -268,7 +366,7 @@
             const [currentActions, setCurrentActions] = useState([]);
             const [gameOverReason, setGameOverReason] = useState("");
             const [currentSituation, setCurrentSituation] = useState(WEEKLY_SITUATIONS[0]);
-            const [score, setScore] = useState(0); // スコア用State追加
+            const [score, setScore] = useState(0); 
             const logsEndRef = useRef(null);
 
             useEffect(() => {
@@ -297,13 +395,15 @@
 
             // 選択肢のランダム抽出
             const pickRandomActions = () => {
+                // "wait" (そっとしておく) が混ざる確率を高めるため、ACTIONS全体からシャッフル
+                // waitは1つしかないので、必ず出現するわけではないが、ACTIONS配列に含めているので自然に抽選される
                 const shuffled = [...ACTIONS].sort(() => 0.5 - Math.random());
                 setCurrentActions(shuffled.slice(0, 3));
             };
 
             // アクション処理
             const handleAction = (action) => {
-                const changes = action.effect(stats);
+                const { diff: changes, result } = action.effect(stats); // effectが結果タイプも返すように変更
                 let newStats = { ...stats };
                 
                 Object.keys(changes).forEach(key => {
@@ -312,17 +412,22 @@
 
                 setParameterChanges(changes);
 
-                let isSuccess = true;
-                if (action.id === 'scold' && stats.inter_fairness <= 60) isSuccess = false;
-                if (action.id === 'drink' && changes.inter_fairness < 0) isSuccess = false;
-                if (action.id === 'praise' && stats.competence > 90) isSuccess = true;
-
-                const possibleMessages = action.getMessages(isSuccess);
+                const possibleMessages = action.getMessages(result); // 結果タイプを渡す
                 const actionMsg = pickMsg(possibleMessages);
                 
                 setLastMessage(actionMsg);
                 
-                const newHistory = [...history, { week, type: 'action', text: `${action.label}: ${actionMsg}` }];
+                // 履歴の色分け
+                let historyColor = 'text-gray-700';
+                if (result === 'good') historyColor = 'text-green-700 font-bold';
+                if (result === 'bad') historyColor = 'text-red-700 font-bold';
+
+                const newHistory = [...history, { 
+                    week, 
+                    type: 'action', 
+                    text: `${action.label} → ${actionMsg}`,
+                    className: historyColor
+                }];
 
                 // ランダムイベント
                 let evtMsg = null;
@@ -348,7 +453,6 @@
 
             // ゲーム状態判定
             const checkGameState = (currentStats, currentWeek) => {
-                // ここでcurrentStatsを渡すように変更
                 if (currentStats.psych_load >= 100) { finishGame('burnout', currentStats); return; }
                 if (currentStats.phys_energy <= 0) { finishGame('exhaustion', currentStats); return; }
                 if (currentStats.inst_fairness <= 0 || currentStats.inter_fairness <= 0) { finishGame('distrust', currentStats); return; }
@@ -358,7 +462,7 @@
                     finishGame('victory', currentStats);
                 } else {
                     setWeek(prev => prev + 1);
-                    updateWeeklySituation(); // 週が変わるときに状況を更新
+                    updateWeeklySituation(); 
                     pickRandomActions();
                 }
             };
@@ -367,9 +471,7 @@
                 let reasonText = "";
                 let calculatedScore = 0;
 
-                // スコア計算
                 if (reason === 'victory') {
-                    // 心理的負荷(psych_load)は低い方が良いので (100 - 値) として加算
                     const total = 
                         finalStats.inst_fairness + 
                         finalStats.inter_fairness + 
@@ -395,7 +497,6 @@
                 setGameState(reason === 'victory' ? 'victory' : 'gameover');
             };
 
-            // --- 状態判定ロジック ---
             const determineMentalStateId = (s) => {
                 if (s.psych_load > 85 || s.phys_energy < 15 || s.inst_fairness < 15 || s.inter_fairness < 15) return 'turnover'; 
                 if (s.inst_fairness < 40 && s.inter_fairness < 40 && s.phys_energy > 40) return 'conflict';
@@ -408,7 +509,7 @@
 
             const currentMentalStateId = determineMentalStateId(stats);
             const currentStateIndex = MENTAL_STATES.findIndex(s => s.id === currentMentalStateId);
-            const rotationAngle = -currentStateIndex * (360 / MENTAL_STATES.length); // 円全体を回す角度
+            const rotationAngle = -currentStateIndex * (360 / MENTAL_STATES.length); 
 
             // --- UIコンポーネント ---
 
@@ -452,12 +553,11 @@
                     {gameState === 'start' && (
                         <div className="p-8 text-center flex-1 flex flex-col justify-center items-center">
                             <div className="mb-6 text-7xl">🏢</div>
-                            <h2 className="text-3xl font-bold mb-4">マネジメント・サバイバル</h2>
+                            <h2 className="text-3xl font-bold mb-4">マネジメント・サバイバル <span className="text-red-500 text-sm block mt-1">Hard Mode</span></h2>
                             <p className="text-gray-600 mb-8 leading-relaxed text-base max-w-lg">
-                                あなたはマネージャーとして、<br/>
-                                部下の6つの心理パラメータを管理します。<br/><br/>
-                                <strong>部下の心理は常に変化（回転）します。</strong><br/>
-                                「現在の状態」が真上（12時）に来るようになっています。<br/>
+                                あなたはマネージャーとして、部下の6つの心理パラメータを管理します。<br/>
+                                今回の調整により、<strong>些細な選択が命取りになる</strong>難易度になっています。<br/>
+                                良かれと思った行動が裏目に出ることも...。<br/>
                                 状態を見極め、「充実・成長」へ導いてください。
                             </p>
                             <button 
@@ -469,28 +569,22 @@
                         </div>
                     )}
 
-                    {/* Main Game Screen (Split Layout) */}
+                    {/* Main Game Screen */}
                     {gameState === 'playing' && (
                         <div className="flex flex-col md:flex-row h-full overflow-hidden">
                             
-                            {/* 左カラム: ステータス表示エリア (円環) */}
+                            {/* 左カラム: ステータス表示 */}
                             <div className="flex-1 bg-slate-50/50 flex items-center justify-center p-6 relative overflow-hidden border-b md:border-b-0 md:border-r border-slate-200">
                                 <div className="relative w-[400px] h-[400px] flex items-center justify-center">
-                                    
-                                    {/* 回転するコンテナ */}
                                     <div 
                                         className="absolute w-full h-full flex items-center justify-center transition-transform duration-1000 ease-in-out"
                                         style={{ transform: `rotate(${rotationAngle}deg)` }}
                                     >
-                                        {/* 軌道の点線円 */}
                                         <div className="absolute w-[340px] h-[340px] rounded-full border-2 border-dashed border-slate-300"></div>
-
-                                        {/* 周囲のステータス円 */}
                                         {MENTAL_STATES.map((state, index) => {
                                             const angle = index * (360 / MENTAL_STATES.length);
-                                            const radius = 170; // 円の半径拡大
+                                            const radius = 170; 
                                             const isActive = state.id === currentMentalStateId;
-
                                             return (
                                                 <div
                                                     key={state.id}
@@ -522,8 +616,6 @@
                                             );
                                         })}
                                     </div>
-
-                                    {/* 中央の黒円（パラメータコンテナ - 回転しない） */}
                                     <div className="absolute w-64 h-64 bg-slate-800 rounded-full flex flex-col justify-center px-8 shadow-2xl z-30 border-4 border-slate-600">
                                         <ProgressBar label="公平性(制度)" value={stats.inst_fairness} change={parameterChanges.inst_fairness} color="#60A5FA" />
                                         <ProgressBar label="公平性(対人)" value={stats.inter_fairness} change={parameterChanges.inter_fairness} color="#818CF8" />
@@ -532,15 +624,12 @@
                                         <ProgressBar label="心理的負荷" value={stats.psych_load} change={parameterChanges.psych_load} color="#F472B6" />
                                         <ProgressBar label="身体エナジー" value={stats.phys_energy} change={parameterChanges.phys_energy} color="#FB923C" />
                                     </div>
-
                                 </div>
                             </div>
 
                             {/* 右カラム: 操作エリア */}
                             <div className="flex-1 flex flex-col min-w-0 bg-white z-20">
                                 <div className="flex-1 overflow-y-auto p-6 flex flex-col justify-center">
-                                    
-                                    {/* 今週の状況・ニュース表示 */}
                                     <div className="w-full mb-4">
                                         <div className="flex items-center gap-2 text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider">
                                             <TrendingUp size={14} />
@@ -557,7 +646,6 @@
                                         </div>
                                     </div>
 
-                                    {/* メッセージエリア */}
                                     <div className="w-full mb-6">
                                         <div className="bg-slate-100 px-6 py-4 rounded-xl text-base text-slate-700 w-full text-center border border-slate-200 min-h-[4rem] flex items-center justify-center shadow-inner italic relative">
                                             <span className="absolute top-2 left-2 text-3xl text-slate-200">"</span>
@@ -571,7 +659,6 @@
                                         )}
                                     </div>
 
-                                    {/* アクションボタン */}
                                     <div className="w-full space-y-3">
                                         <h3 className="text-sm font-bold text-gray-500 mb-2 flex items-center gap-2">
                                             <Briefcase size={16} />
@@ -593,6 +680,7 @@
                                                             {action.type === ActionType.COMMUNICATION && <MessageCircle size={20} />}
                                                             {action.type === ActionType.WORK && <Briefcase size={20} />}
                                                             {action.type === ActionType.REST && <Coffee size={20} />}
+                                                            {action.type === ActionType.WAIT && <Eye size={20} />}
                                                         </div>
                                                     </div>
                                                 </button>
@@ -601,7 +689,6 @@
                                     </div>
                                 </div>
                                 
-                                {/* 履歴ログ (右下) */}
                                 <div className="bg-slate-50 border-t border-slate-200 p-3 h-40 shrink-0">
                                     <h4 className="text-xs font-bold text-gray-500 mb-2 flex items-center gap-1">
                                         <History size={12} />
@@ -612,7 +699,7 @@
                                             <p className="text-gray-400 italic text-center py-4">履歴はまだありません</p>
                                         ) : (
                                             history.map((log, i) => (
-                                                <div key={i} className={`p-2 rounded border ${log.type === 'event' ? 'bg-yellow-50 border-yellow-200 text-yellow-800' : 'bg-white border-slate-200 text-gray-700'}`}>
+                                                <div key={i} className={`p-2 rounded border ${log.type === 'event' ? 'bg-yellow-50 border-yellow-200 text-yellow-800' : 'bg-white border-slate-200'} ${log.className || 'text-gray-700'}`}>
                                                     <span className="font-mono font-bold text-gray-400 mr-2 border-r border-gray-200 pr-2">W{log.week}</span>
                                                     {log.text}
                                                 </div>
