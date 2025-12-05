@@ -54,6 +54,8 @@
         const Zap = (p) => <IconBase {...p}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></IconBase>;
         const Eye = (p) => <IconBase {...p}><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></IconBase>;
         const Ghost = (p) => <IconBase {...p}><path d="M9 10h.01"/><path d="M15 10h.01"/><path d="M12 2a8 8 0 0 0-8 8v12l3-3 2.5 2.5L12 19l2.5 2.5L17 19l3 3V10a8 8 0 0 0-8-8z"/></IconBase>;
+        const User = (p) => <IconBase {...p}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></IconBase>;
+        const UserCheck = (p) => <IconBase {...p}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></IconBase>;
 
         // --- ゲーム定数 & データ ---
         const MAX_WEEKS = 12;
@@ -547,22 +549,6 @@
             const currentMentalStateId = determineMentalStateId(stats);
             const currentStateIndex = MENTAL_STATES.findIndex(s => s.id === currentMentalStateId);
             
-            // 回転方向の制御：
-            // 配列は「良 -> 悪」の順（時計回り）。
-            // 悪化（index増）すると、ターゲット位置は時計回り方向に進む。
-            // 12時位置に持ってくるには、円盤全体を「反時計回り（マイナス角）」に回す必要がある？
-            // いや、待てよ。
-            // 配置：0:充実(0度), 1:揺らぎ(51度), 2:葛藤(102度)... (時計回り配置)
-            // 現在：充実(0)。回転0。
-            // 次：揺らぎ(1)。揺らぎを12時(0度)にしたい。
-            // 配置されている「51度」のものを「0度」にするには、-51度（反時計回り）の回転が必要。
-            // ユーザー要望：「悪くなるときは時計回り」。
-            // つまり、悪化（0->1）のとき、回転角はプラスになりたい。
-            // そのためには、配置が「反時計回り」である必要がある。
-            // 配置：0:充実(0度), 1:揺らぎ(-51度), 2:葛藤(-102度)...
-            // これなら、揺らぎ(-51度)を0度にするには、+51度（時計回り）の回転が必要。
-            // よって、描画時の配置角度をマイナスにする。
-            
             const rotationAngle = currentStateIndex * (360 / MENTAL_STATES.length); 
 
             // --- UIコンポーネント ---
@@ -632,7 +618,7 @@
                         <div className="flex flex-col md:flex-row h-full overflow-hidden">
                             
                             {/* 左カラム: ステータス表示 */}
-                            <div className="flex-1 bg-slate-50/50 flex items-center justify-center p-6 relative overflow-hidden border-b md:border-b-0 md:border-r border-slate-200">
+                            <div className="flex-1 bg-slate-50/50 flex flex-col items-center justify-center p-6 relative overflow-hidden border-b md:border-b-0 md:border-r border-slate-200">
                                 <div className="relative w-[400px] h-[400px] flex items-center justify-center">
                                     <div 
                                         className="absolute w-full h-full flex items-center justify-center transition-transform duration-1000 ease-in-out"
@@ -682,6 +668,31 @@
                                         <ProgressBar label="有用感" value={stats.competence} change={parameterChanges.competence} color="#2DD4BF" />
                                         <ProgressBar label="心理的負荷" value={stats.psych_load} change={parameterChanges.psych_load} color="#F472B6" />
                                         <ProgressBar label="身体エナジー" value={stats.phys_energy} change={parameterChanges.phys_energy} color="#FB923C" />
+                                    </div>
+                                </div>
+
+                                {/* アイコン追加エリア */}
+                                <div className="mt-8 flex justify-center items-end gap-8">
+                                    {/* 部下 */}
+                                    <div className="flex flex-col items-center gap-2">
+                                        <div className={`p-4 rounded-full bg-white border-2 border-slate-200 shadow-sm transition-colors duration-500 ${
+                                            currentMentalStateId === 'growth' ? 'bg-red-50 border-red-200' :
+                                            currentMentalStateId === 'turnover' ? 'bg-purple-50 border-purple-200' : ''
+                                        }`}>
+                                            <User size={48} className={
+                                                currentMentalStateId === 'growth' ? 'text-red-500' :
+                                                currentMentalStateId === 'turnover' ? 'text-purple-500' : 'text-slate-600'
+                                            } />
+                                        </div>
+                                        <span className="text-xs font-bold text-slate-500">部下</span>
+                                    </div>
+
+                                    {/* 上司（プレイヤー） */}
+                                    <div className="flex flex-col items-center gap-2">
+                                        <div className="p-4 rounded-full bg-white border-2 border-slate-200 shadow-sm">
+                                            <UserCheck size={48} className="text-blue-600" />
+                                        </div>
+                                        <span className="text-xs font-bold text-slate-500">あなた（上司）</span>
                                     </div>
                                 </div>
                             </div>
