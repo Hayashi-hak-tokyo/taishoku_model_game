@@ -53,6 +53,7 @@
         const TrendingUp = (p) => <IconBase {...p}><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></IconBase>;
         const Zap = (p) => <IconBase {...p}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></IconBase>;
         const Eye = (p) => <IconBase {...p}><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></IconBase>;
+        const Ghost = (p) => <IconBase {...p}><path d="M9 10h.01"/><path d="M15 10h.01"/><path d="M12 2a8 8 0 0 0-8 8v12l3-3 2.5 2.5L12 19l2.5 2.5L17 19l3 3V10a8 8 0 0 0-8-8z"/></IconBase>;
 
         // --- ゲーム定数 & データ ---
         const MAX_WEEKS = 12;
@@ -60,9 +61,9 @@
         const MENTAL_STATES = [
             { id: 'conflict', label: '葛藤・抵抗', subLabel: '(怒りと対立)', colorBg: '#FDE047', colorBorder: '#EAB308' },
             { id: 'resignation', label: '諦め・適応', subLabel: '', colorBg: '#BBF7D0', colorBorder: '#86EFAC' },
-            { id: 'quiet_quit', label: '静かな退職', subLabel: '', colorBg: '#A5F3FC', colorBorder: '#67E8F9' },
-            { id: 'apathy', label: '無関心', subLabel: '', colorBg: '#93C5FD', colorBorder: '#60A5FA' },
-            { id: 'turnover', label: '退職・転出', subLabel: '(危険)', colorBg: '#C4B5FD', colorBorder: '#A78BFA' },
+            { id: 'quiet_quit', label: '静かな退職', subLabel: '(危険域)', colorBg: '#A5F3FC', colorBorder: '#67E8F9' },
+            { id: 'apathy', label: '無関心', subLabel: '(危険域)', colorBg: '#93C5FD', colorBorder: '#60A5FA' },
+            { id: 'turnover', label: '退職・転出', subLabel: '(即死)', colorBg: '#C4B5FD', colorBorder: '#A78BFA' },
             { id: 'growth', label: '充実・成長', subLabel: '(理想)', colorBg: '#DCA598', colorBorder: '#B97A6D' },
             { id: 'waver', label: '揺らぎ・迷い', subLabel: '', colorBg: '#E7CBA9', colorBorder: '#D4A373' },
         ];
@@ -373,14 +374,30 @@
                 logsEndRef.current?.scrollIntoView({ behavior: "smooth" });
             }, [history]);
 
-            // 週の状況をランダム設定
+            // 状態判定ロジック
+            const determineMentalStateId = (s) => {
+                // 即死条件 (Turnover)
+                if (s.psych_load > 85 || s.phys_energy < 15 || s.inst_fairness < 15 || s.inter_fairness < 15) return 'turnover'; 
+                
+                // ネガティブ状態
+                if (s.inst_fairness < 40 && s.inter_fairness < 40 && s.phys_energy > 40) return 'conflict';
+                if (s.autonomy < 40 && s.psych_load < 60) return 'resignation'; 
+                if (s.competence < 40 && s.autonomy < 40) return 'quiet_quit'; // 静かな退職
+                if (s.phys_energy < 40 && s.competence < 40) return 'apathy'; // 無関心
+                
+                // ポジティブ状態
+                if (s.autonomy > 60 && s.competence > 60 && s.phys_energy > 50 && s.inst_fairness > 50) return 'growth'; 
+                
+                // その他
+                return 'waver'; 
+            };
+
             const updateWeeklySituation = () => {
                 const situation = WEEKLY_SITUATIONS[Math.floor(Math.random() * WEEKLY_SITUATIONS.length)];
                 setCurrentSituation(situation);
                 return situation;
             };
 
-            // ゲーム開始
             const startGame = () => {
                 setStats(generateInitialStats()); 
                 setParameterChanges({});
@@ -393,17 +410,13 @@
                 pickRandomActions();
             };
 
-            // 選択肢のランダム抽出
             const pickRandomActions = () => {
-                // "wait" (そっとしておく) が混ざる確率を高めるため、ACTIONS全体からシャッフル
-                // waitは1つしかないので、必ず出現するわけではないが、ACTIONS配列に含めているので自然に抽選される
                 const shuffled = [...ACTIONS].sort(() => 0.5 - Math.random());
                 setCurrentActions(shuffled.slice(0, 3));
             };
 
-            // アクション処理
             const handleAction = (action) => {
-                const { diff: changes, result } = action.effect(stats); // effectが結果タイプも返すように変更
+                const { diff: changes, result } = action.effect(stats);
                 let newStats = { ...stats };
                 
                 Object.keys(changes).forEach(key => {
@@ -412,12 +425,11 @@
 
                 setParameterChanges(changes);
 
-                const possibleMessages = action.getMessages(result); // 結果タイプを渡す
+                const possibleMessages = action.getMessages(result);
                 const actionMsg = pickMsg(possibleMessages);
                 
                 setLastMessage(actionMsg);
                 
-                // 履歴の色分け
                 let historyColor = 'text-gray-700';
                 if (result === 'good') historyColor = 'text-green-700 font-bold';
                 if (result === 'bad') historyColor = 'text-red-700 font-bold';
@@ -429,7 +441,6 @@
                     className: historyColor
                 }];
 
-                // ランダムイベント
                 let evtMsg = null;
                 if (Math.random() < 0.25 && week < MAX_WEEKS) {
                     const evt = RANDOM_EVENTS[Math.floor(Math.random() * RANDOM_EVENTS.length)];
@@ -442,7 +453,6 @@
                 setEventMessage(evtMsg);
                 setHistory(newHistory);
 
-                // 値の正規化
                 Object.keys(newStats).forEach(key => {
                     newStats[key] = Math.max(0, Math.min(100, newStats[key]));
                 });
@@ -451,15 +461,22 @@
                 checkGameState(newStats, week);
             };
 
-            // ゲーム状態判定
             const checkGameState = (currentStats, currentWeek) => {
-                if (currentStats.psych_load >= 100) { finishGame('burnout', currentStats); return; }
-                if (currentStats.phys_energy <= 0) { finishGame('exhaustion', currentStats); return; }
-                if (currentStats.inst_fairness <= 0 || currentStats.inter_fairness <= 0) { finishGame('distrust', currentStats); return; }
-                if (currentStats.competence <= 0) { finishGame('loss_confidence', currentStats); return; }
+                // 1. 即死判定 (Turnoverになった瞬間)
+                const currentState = determineMentalStateId(currentStats);
+                if (currentState === 'turnover') {
+                    finishGame('turnover', currentStats);
+                    return;
+                }
 
+                // 2. 期間終了判定
                 if (currentWeek >= MAX_WEEKS) {
-                    finishGame('victory', currentStats);
+                    // 終了時に「静かな退職」または「無関心」の場合は敗北
+                    if (currentState === 'quiet_quit' || currentState === 'apathy') {
+                        finishGame('quiet_quit_end', currentStats);
+                    } else {
+                        finishGame('victory', currentStats);
+                    }
                 } else {
                     setWeek(prev => prev + 1);
                     updateWeeklySituation(); 
@@ -471,6 +488,7 @@
                 let reasonText = "";
                 let calculatedScore = 0;
 
+                // スコア計算 (Victoryのみ加算)
                 if (reason === 'victory') {
                     const total = 
                         finalStats.inst_fairness + 
@@ -481,30 +499,29 @@
                         finalStats.phys_energy;
                     calculatedScore = Math.floor(total / 6);
                 } else {
-                    calculatedScore = 0; // 退職時は強制0点
+                    calculatedScore = 0; // それ以外は0点
                 }
 
                 switch(reason) {
-                    case 'burnout': reasonText = "「もう無理です...会社に来るのが怖くて...」休職願が出されました。（原因：心理的負荷の限界）"; break;
-                    case 'exhaustion': reasonText = "深夜、部下がオフィスで倒れ救急搬送されました。（原因：身体的エネルギーの枯渇）"; break;
-                    case 'distrust': reasonText = "「この会社で正当に評価される未来が見えません。」退職届が出されました。（原因：公平性の欠如）"; break;
-                    case 'loss_confidence': reasonText = "「僕には荷が重すぎました...ご迷惑をおかけしました。」退職届が出されました。（原因：有用感の喪失）"; break;
-                    default: reasonText = "部下は退職しました。";
+                    case 'turnover': 
+                        // 具体的な原因をパラメータから推測
+                        if(finalStats.psych_load > 85) reasonText = "「もう無理です...会社に来るのが怖くて...」休職願が出されました。（原因：心理的負荷の限界）";
+                        else if(finalStats.phys_energy < 15) reasonText = "深夜、部下がオフィスで倒れ救急搬送されました。（原因：身体的エネルギーの枯渇）";
+                        else reasonText = "「この会社には未来がありません。」退職届が叩きつけられました。（原因：公平性の欠如）";
+                        break;
+                    case 'quiet_quit_end':
+                        reasonText = "期間満了ですが、部下は完全にやる気を失っています。「言われたことだけやります...」事実上のマネジメント敗北です。（原因：静かな退職・無関心）";
+                        break;
+                    case 'victory':
+                        reasonText = "部下は素晴らしい状態で期を終えました。信頼関係は盤石です！";
+                        break;
+                    default: 
+                        reasonText = "ゲームオーバー";
                 }
                 
                 setScore(calculatedScore);
                 setGameOverReason(reasonText);
                 setGameState(reason === 'victory' ? 'victory' : 'gameover');
-            };
-
-            const determineMentalStateId = (s) => {
-                if (s.psych_load > 85 || s.phys_energy < 15 || s.inst_fairness < 15 || s.inter_fairness < 15) return 'turnover'; 
-                if (s.inst_fairness < 40 && s.inter_fairness < 40 && s.phys_energy > 40) return 'conflict';
-                if (s.autonomy < 40 && s.psych_load < 60) return 'resignation'; 
-                if (s.competence < 40 && s.autonomy < 40) return 'quiet_quit'; 
-                if (s.phys_energy < 40 && s.competence < 40) return 'apathy'; 
-                if (s.autonomy > 60 && s.competence > 60 && s.phys_energy > 50 && s.inst_fairness > 50) return 'growth'; 
-                return 'waver'; 
             };
 
             const currentMentalStateId = determineMentalStateId(stats);
@@ -556,9 +573,12 @@
                             <h2 className="text-3xl font-bold mb-4">マネジメント・サバイバル <span className="text-red-500 text-sm block mt-1">Hard Mode</span></h2>
                             <p className="text-gray-600 mb-8 leading-relaxed text-base max-w-lg">
                                 あなたはマネージャーとして、部下の6つの心理パラメータを管理します。<br/>
-                                今回の調整により、<strong>些細な選択が命取りになる</strong>難易度になっています。<br/>
-                                良かれと思った行動が裏目に出ることも...。<br/>
-                                状態を見極め、「充実・成長」へ導いてください。
+                                <br/>
+                                <strong>⚠️ ゲームオーバー条件:</strong><br/>
+                                1. パラメータが悪化し「退職・転出」状態になった瞬間<br/>
+                                2. 期間終了時に「静かな退職」または「無関心」状態であること<br/>
+                                <br/>
+                                些細な選択が命取りになります。慎重に、時に大胆に指示を出してください。
                             </p>
                             <button 
                                 onClick={startGame}
@@ -720,15 +740,22 @@
                                     <Award size={80} className="mx-auto text-yellow-500 mb-6" />
                                     <h2 className="text-3xl font-bold text-blue-900 mb-2">QUARTER COMPLETE!</h2>
                                     <div className="text-5xl font-bold text-blue-600 mb-4">{score}<span className="text-2xl text-blue-400">点</span></div>
-                                    <p className="text-blue-700 mb-8 text-lg">マネジメント成功です。素晴らしいリーダーシップでした！</p>
+                                    <p className="text-blue-700 mb-8 text-lg">{gameOverReason}</p>
                                 </>
                             ) : (
                                 <>
-                                    <UserMinus size={80} className="mx-auto text-red-500 mb-6" />
+                                    {/* 敗北時はゴーストアイコンかUserMinusを表示 */}
+                                    {gameOverReason.includes("静かな退職") ? (
+                                        <Ghost size={80} className="mx-auto text-gray-500 mb-6" />
+                                    ) : (
+                                        <UserMinus size={80} className="mx-auto text-red-500 mb-6" />
+                                    )}
                                     <h2 className="text-3xl font-bold text-red-800 mb-2">GAME OVER</h2>
                                     <div className="text-5xl font-bold text-gray-400 mb-4">0<span className="text-2xl text-gray-300">点</span></div>
                                     <div className="bg-white p-6 rounded-xl shadow-md border border-red-100 mb-10 text-left relative mt-4 max-w-lg w-full">
-                                        <div className="absolute -top-3 left-6 bg-red-100 text-red-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">退職/休職届</div>
+                                        <div className="absolute -top-3 left-6 bg-red-100 text-red-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
+                                            {gameOverReason.includes("静かな退職") ? "マネジメント失敗" : "退職/休職届"}
+                                        </div>
                                         <p className="text-gray-700 font-serif italic text-lg leading-relaxed mt-2">"{gameOverReason}"</p>
                                     </div>
                                 </>
