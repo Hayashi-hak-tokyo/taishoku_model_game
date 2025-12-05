@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>部下マネジメントサバイバル</title>
+    <title>部下の感情マネジメント</title>
     <!-- Tailwind CSS (デザイン用) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- React & ReactDOM (ゲームエンジン) -->
@@ -525,7 +525,7 @@
                 switch(reason) {
                     case 'turnover': 
                         if(finalStats.inst_fairness <= 0 || finalStats.inter_fairness <= 0 || finalStats.autonomy <= 0 || finalStats.competence <= 0 || finalStats.phys_energy <= 0) {
-                            reasonText = "限界を超えました。何かが完全に欠落し、部下は去りました。（原因：パラメータの枯渇）";
+                            reasonText = "限界を超えました。何かが完全に欠落し、部下は去りました。（原因：気力の枯渇）";
                         }
                         else if(finalStats.psych_load >= 90) reasonText = "「もう無理です...会社に来るのが怖くて...」休職願が出されました。（原因：心理的負荷の限界）";
                         else if(finalStats.phys_energy <= 10) reasonText = "深夜、部下がオフィスで倒れ救急搬送されました。（原因：身体的エネルギーの枯渇）";
