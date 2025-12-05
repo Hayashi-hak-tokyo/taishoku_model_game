@@ -1,0 +1,602 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.1">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Menlo; color: #6d6d6d; -webkit-text-stroke: #6d6d6d}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Menlo; color: #6b0001; -webkit-text-stroke: #6b0001}
+    p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Menlo; color: #fb0007; -webkit-text-stroke: #fb0007}
+    p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Menlo; color: #0000ff; -webkit-text-stroke: #0000ff}
+    p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Menlo; -webkit-text-stroke: #000000}
+    p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Menlo; color: #4d5055; -webkit-text-stroke: #4d5055}
+    p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Menlo; -webkit-text-stroke: #000000; min-height: 16.0px}
+    p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Menlo; color: #18702b; -webkit-text-stroke: #18702b}
+    span.s1 {font-kerning: none; background-color: #ecf1f7}
+    span.s2 {font-kerning: none; color: #fb0007; background-color: #ecf1f7; -webkit-text-stroke: 0px #fb0007}
+    span.s3 {font-kerning: none; color: #2a2a2a; background-color: #ecf1f7; -webkit-text-stroke: 0px #2a2a2a}
+    span.s4 {font-kerning: none; color: #000000; background-color: #ecf1f7; -webkit-text-stroke: 0px #000000}
+    span.s5 {font-kerning: none; color: #0000ff; background-color: #ecf1f7; -webkit-text-stroke: 0px #0000ff}
+    span.s6 {font-kerning: none; color: #6b0001; background-color: #ecf1f7; -webkit-text-stroke: 0px #6b0001}
+    span.s7 {font-kerning: none; color: #137646; background-color: #ecf1f7; -webkit-text-stroke: 0px #137646}
+    span.s8 {font-kerning: none; color: #093c94; background-color: #ecf1f7; -webkit-text-stroke: 0px #093c94}
+    span.s9 {font-kerning: none}
+  </style>
+</head>
+<body>
+<p class="p1"><span class="s1">&lt;!DOCTYPE</span><span class="s2"> html</span><span class="s1">&gt;</span></p>
+<p class="p2"><span class="s3">&lt;</span><span class="s1">html</span><span class="s4"> </span><span class="s2">lang</span><span class="s3">=</span><span class="s5">"ja"</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s3">&lt;</span><span class="s1">head</span><span class="s3">&gt;</span></p>
+<p class="p3"><span class="s4"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;</span><span class="s6">meta</span><span class="s4"> </span><span class="s1">charset</span><span class="s3">=</span><span class="s5">"UTF-8"</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s4"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;</span><span class="s6">meta</span><span class="s4"> </span><span class="s2">name</span><span class="s3">=</span><span class="s1">"viewport"</span><span class="s4"> </span><span class="s2">content</span><span class="s3">=</span><span class="s1">"width=device-width, initial-scale=1.0"</span><span class="s3">&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;</span><span class="s6">title</span><span class="s3">&gt;</span><span class="s1">部下マネジメントサバイバル</span><span class="s3">&lt;/</span><span class="s6">title</span><span class="s3">&gt;</span></p>
+<p class="p6"><span class="s4"><span class="Apple-converted-space">    </span></span><span class="s1">&lt;!-- Tailwind CSS (デザイン用) --&gt;</span></p>
+<p class="p4"><span class="s4"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;</span><span class="s6">script</span><span class="s4"> </span><span class="s2">src</span><span class="s3">=</span><span class="s1">"https://cdn.tailwindcss.com"</span><span class="s3">&gt;&lt;/</span><span class="s6">script</span><span class="s3">&gt;</span></p>
+<p class="p6"><span class="s4"><span class="Apple-converted-space">    </span></span><span class="s1">&lt;!-- React &amp; ReactDOM (ゲームエンジン) --&gt;</span></p>
+<p class="p4"><span class="s4"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;</span><span class="s6">script</span><span class="s4"> </span><span class="s2">crossorigin</span><span class="s4"> </span><span class="s2">src</span><span class="s3">=</span><span class="s1">"https://unpkg.com/react@18/umd/react.production.min.js"</span><span class="s3">&gt;&lt;/</span><span class="s6">script</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s4"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;</span><span class="s6">script</span><span class="s4"> </span><span class="s2">crossorigin</span><span class="s4"> </span><span class="s2">src</span><span class="s3">=</span><span class="s1">"https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"</span><span class="s3">&gt;&lt;/</span><span class="s6">script</span><span class="s3">&gt;</span></p>
+<p class="p6"><span class="s4"><span class="Apple-converted-space">    </span></span><span class="s1">&lt;!-- Babel (コード変換用) --&gt;</span></p>
+<p class="p4"><span class="s4"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;</span><span class="s6">script</span><span class="s4"> </span><span class="s2">src</span><span class="s3">=</span><span class="s1">"https://unpkg.com/@babel/standalone/babel.min.js"</span><span class="s3">&gt;&lt;/</span><span class="s6">script</span><span class="s3">&gt;</span></p>
+<p class="p7"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p2"><span class="s4"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;</span><span class="s1">style</span><span class="s3">&gt;</span></p>
+<p class="p6"><span class="s4"><span class="Apple-converted-space">        </span></span><span class="s1">/* スクロールバーのカスタマイズ */</span></p>
+<p class="p2"><span class="s4"><span class="Apple-converted-space">        </span></span><span class="s1">.custom-scrollbar::-webkit-scrollbar</span><span class="s4"> {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">width:</span><span class="s1"> </span><span class="s7">6px</span><span class="s1">;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s4"><span class="Apple-converted-space">        </span></span><span class="s1">.custom-scrollbar::-webkit-scrollbar-track</span><span class="s4"> {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">background:</span><span class="s1"> </span><span class="s8">#f1f1f1</span><span class="s1">;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s4"><span class="Apple-converted-space">        </span></span><span class="s1">.custom-scrollbar::-webkit-scrollbar-thumb</span><span class="s4"> {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">background:</span><span class="s1"> </span><span class="s8">#cbd5e1</span><span class="s1">;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">border-radius:</span><span class="s1"> </span><span class="s7">3px</span><span class="s1">;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s4"><span class="Apple-converted-space">        </span></span><span class="s1">.custom-scrollbar::-webkit-scrollbar-thumb:hover</span><span class="s4"> {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span></span><span class="s2">background:</span><span class="s1"> </span><span class="s8">#94a3b8</span><span class="s1">;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span></span><span class="s6">body</span><span class="s1"> {</span></p>
+<p class="p8"><span class="s4"><span class="Apple-converted-space">            </span></span><span class="s2">font-family:</span><span class="s4"> </span><span class="s1">'Helvetica Neue'</span><span class="s4">, </span><span class="s8">Arial</span><span class="s4">, </span><span class="s1">'Hiragino Kaku Gothic ProN'</span><span class="s4">, </span><span class="s1">'Hiragino Sans'</span><span class="s4">, </span><span class="s8">Meiryo</span><span class="s4">, </span><span class="s8">sans-serif</span><span class="s4">;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s4"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;/</span><span class="s1">style</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s3">&lt;/</span><span class="s1">head</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s3">&lt;</span><span class="s6">body</span><span class="s4"> </span><span class="s2">class</span><span class="s3">=</span><span class="s1">"bg-slate-50 min-h-screen flex items-center justify-center p-2"</span><span class="s3">&gt;</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p4"><span class="s4"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;</span><span class="s6">div</span><span class="s4"> </span><span class="s2">id</span><span class="s3">=</span><span class="s1">"root"</span><span class="s3">&gt;&lt;/</span><span class="s6">div</span><span class="s3">&gt;</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p4"><span class="s4"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;</span><span class="s6">script</span><span class="s4"> </span><span class="s2">type</span><span class="s3">=</span><span class="s1">"text/babel"</span><span class="s3">&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>const { useState, useEffect, useRef } = React;</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>// --- アイコンコンポーネント (SVG) ---</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>// 外部ライブラリを使わず、直接描画して軽量化</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>const IconBase = ({ children, color = "currentColor", size = 24, ...props }) =&gt; (</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>&lt;svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}&gt;{children}&lt;/svg&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>);</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>const Briefcase = (p) =&gt; &lt;IconBase {...p}&gt;&lt;rect width="20" height="14" x="2" y="7" rx="2" ry="2"/&gt;&lt;path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/&gt;&lt;/IconBase&gt;;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>const MessageCircle = (p) =&gt; &lt;IconBase {...p}&gt;&lt;path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/&gt;&lt;/IconBase&gt;;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>const Coffee = (p) =&gt; &lt;IconBase {...p}&gt;&lt;path d="M17 8h1a4 4 0 1 1 0 8h-1"/&gt;&lt;path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/&gt;&lt;line x1="6" x2="6" y1="2" y2="4"/&gt;&lt;line x1="10" x2="10" y1="2" y2="4"/&gt;&lt;line x1="14" x2="14" y1="2" y2="4"/&gt;&lt;/IconBase&gt;;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>const History = (p) =&gt; &lt;IconBase {...p}&gt;&lt;path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 12"/&gt;&lt;path d="M3 3v9h9"/&gt;&lt;path d="M12 7v5l4 2"/&gt;&lt;/IconBase&gt;;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>const UserMinus = (p) =&gt; &lt;IconBase {...p}&gt;&lt;path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/&gt;&lt;circle cx="9" cy="7" r="4"/&gt;&lt;line x1="22" x2="16" y1="11" y2="11"/&gt;&lt;/IconBase&gt;;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>const Award = (p) =&gt; &lt;IconBase {...p}&gt;&lt;circle cx="12" cy="8" r="6"/&gt;&lt;path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/&gt;&lt;/IconBase&gt;;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>const RefreshCw = (p) =&gt; &lt;IconBase {...p}&gt;&lt;path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/&gt;&lt;path d="M21 3v5h-5"/&gt;&lt;path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/&gt;&lt;path d="M8 16H3v5"/&gt;&lt;/IconBase&gt;;</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>// --- ゲーム定数 &amp; データ ---</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>const MAX_WEEKS = 12;</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>const MENTAL_STATES = [</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>{ id: 'conflict', label: '葛藤・抵抗', subLabel: '(怒りと対立)', colorBg: '#FDE047', colorBorder: '#EAB308' },</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>{ id: 'resignation', label: '諦め・適応', subLabel: '', colorBg: '#BBF7D0', colorBorder: '#86EFAC' },</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>{ id: 'quiet_quit', label: '静かな退職', subLabel: '', colorBg: '#A5F3FC', colorBorder: '#67E8F9' },</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>{ id: 'apathy', label: '無関心', subLabel: '', colorBg: '#93C5FD', colorBorder: '#60A5FA' },</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>{ id: 'turnover', label: '退職・転出', subLabel: '(危険)', colorBg: '#C4B5FD', colorBorder: '#A78BFA' },</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>{ id: 'growth', label: '充実・成長', subLabel: '(理想)', colorBg: '#DCA598', colorBorder: '#B97A6D' },</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>{ id: 'waver', label: '揺らぎ・迷い', subLabel: '', colorBg: '#E7CBA9', colorBorder: '#D4A373' },</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>];</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>const generateInitialStats = () =&gt; ({</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>inst_fairness: Math.floor(30 + Math.random() * 40),</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>inter_fairness: Math.floor(30 + Math.random() * 40),</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>autonomy: Math.floor(30 + Math.random() * 40),</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>competence: Math.floor(30 + Math.random() * 40),</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>psych_load: Math.floor(20 + Math.random() * 30),</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>phys_energy: Math.floor(60 + Math.random() * 40)</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>});</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>const ActionType = {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>WORK: 'work',</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>COMMUNICATION: 'comm',</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>REST: 'rest'</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>};</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>const pickMsg = (messages) =&gt; messages[Math.floor(Math.random() * messages.length)];</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>const ACTIONS = [</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>{</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>id: 'praise',</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>label: '成果を褒める',</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>type: ActionType.COMMUNICATION,</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>desc: '具体的な成果を承認する',</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>effect: (stats) =&gt; ({</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>inst_fairness: +2, inter_fairness: +5, autonomy: 0, competence: +10, psych_load: -5, phys_energy: 0</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>}),</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>getMessages: (success) =&gt; success ? [</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>"「ありがとうございます！そこ、こだわったんです！」",</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>"「部長にそう言ってもらえると、自信になります！」",</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>"「やった！次はもっといいもの作りますね！」"</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>] : [</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>"「あ、はい...ありがとうございます（心なしか声が小さい）」",</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>"「はあ...（もっと別のところを見てほしいんだけどな...）」"</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>]</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>},</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>{</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>id: 'scold',</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>label: '厳しく指導',</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>type: ActionType.WORK,</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>desc: '改善点を指摘し修正させる',</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>effect: (stats) =&gt; {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>const isTrusted = stats.inter_fairness &gt; 60;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>return {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                        </span>inst_fairness: +2, inter_fairness: isTrusted ? 0 : -10, autonomy: -5, competence: isTrusted ? +5 : -10, psych_load: +15, phys_energy: -5</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>};</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>},</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>getMessages: (success) =&gt; success ? [</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>"「確かにそうですね...。次からは絶対に気をつけます！」",</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>"「ご指摘ありがとうございます。すぐに修正します！」",</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>"「うっ...痛いところを...。でも、おっしゃる通りです。」"</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>] : [</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>"「すいません...（なんで自分ばっかり...）」",</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>"「...はい、わかりました。（納得いかない顔をしている）」",</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>"「（また怒られた...もう嫌だな...）」"</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>]</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>},</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>{</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>id: 'delegate',</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>label: '仕事を任せる',</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>type: ActionType.WORK,</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>desc: '権限委譲して見守る',</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>effect: (stats) =&gt; ({</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>inst_fairness: 0, inter_fairness: +2, autonomy: +15, competence: +5, psych_load: +10, phys_energy: -10</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>}),</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>getMessages: (success) =&gt; [</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>"「これ、僕がやっていいんですか？ やります！」",</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>"「責任重大ですね...でも、チャンスだと思って頑張ります！」",</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>"「任せてください！期待以上の結果を出してみせますよ。」"</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>]</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>},</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>{</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>id: 'micro_manage',</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>label: '細かく指示出し',</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>type: ActionType.WORK,</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>desc: '進捗を細部まで管理する',</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>effect: (stats) =&gt; ({</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>inst_fairness: +5, inter_fairness: -2, autonomy: -15, competence: -5, psych_load: +5, phys_energy: -5</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>}),</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>getMessages: (success) =&gt; [</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>"「あ、はい。その通りに進めます...（やりづらいなぁ）」",</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>"「報告ですね。ええと、今は...（監視されてるみたいだ）」",</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>"「細部まで確認ありがとうございます...（信用されてないのかな）」"</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>]</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>},</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>{</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>id: 'listen',</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>label: '1on1で傾聴',</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>type: ActionType.COMMUNICATION,</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>desc: '不満やキャリアの相談に乗る',</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>effect: (stats) =&gt; ({</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>inst_fairness: +2, inter_fairness: +10, autonomy: +2, competence: +2, psych_load: -10, phys_energy: 0</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>}),</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>getMessages: (success) =&gt; [</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>"「実は最近、少し悩んでいて...聞いてくれますか？」",</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>"「部長とこうして話せると、頭の中が整理できます。」",</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>"「あー、スッキリしました！ 聞いてもらえてよかったです。」"</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>]</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>},</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>{</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>id: 'explain_rule',</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>label: '評価制度の説明',</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>type: ActionType.COMMUNICATION,</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>desc: '評価基準の透明性を伝える',</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>effect: (stats) =&gt; ({</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>inst_fairness: +15, inter_fairness: +2, autonomy: 0, competence: 0, psych_load: 0, phys_energy: -2</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>}),</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>getMessages: (success) =&gt; [</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>"「なるほど、そういう基準だったんですね。クリアになりました。」",</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>"「何を目指せばいいか分かって、モヤモヤが晴れました！」",</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>"「公平に見てくれてるって分かって安心しました。」"</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>]</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>},</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>{</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>id: 'rest',</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>label: '休息を促す',</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>type: ActionType.REST,</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>desc: '早帰りを推奨する',</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>effect: (stats) =&gt; ({</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>inst_fairness: 0, inter_fairness: +5, autonomy: 0, competence: 0, psych_load: -10, phys_energy: +15</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>}),</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>getMessages: (success) =&gt; [</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>"「え、いいんですか？ じゃあ、お言葉に甘えて...」",</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>"「助かります...最近ちょっと寝不足気味だったので。」",</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>"「ありがとうございます！今日はゆっくり風呂に入って寝ます！」"</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>]</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>},</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>{</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>id: 'drink',</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>label: '飲みニケーション',</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>type: ActionType.REST,</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>desc: '腹を割って話す',</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>effect: (stats) =&gt; {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>const success = Math.random() &gt; 0.4;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>return {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                        </span>inst_fairness: 0, inter_fairness: success ? +10 : -5, autonomy: 0, competence: 0, psych_load: success ? -5 : +5, phys_energy: -10</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>};</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>},</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>getMessages: (success) =&gt; success ? [</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>"「いやー、部長がそんな過去を持ってたとは！面白いです！」",</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>"「今日誘ってもらえて良かったです。明日からまた頑張ります！」",</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>"「ぶっちゃけますけど...部長のこと、最初は怖かったんですよ（笑）」"</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>] : [</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>"「あ、明日早いんで、そろそろ...（時計をチラチラ見ている）」",</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>"「はは...そうですね...（話長いなぁ...帰りたい）」",</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>"「すいません、ちょっと酔いが回っちゃって...（気疲れしたようだ）」"</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>]</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>];</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>const RANDOM_EVENTS = [</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>{ title: "不透明な人事異動", desc: "「なんであの人が昇進するんですか...？」部下が不信感を抱いている。", effect: { inst_fairness: -15, inter_fairness: 0, autonomy: 0, competence: 0, psych_load: +5, phys_energy: 0 } },</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>{ title: "プロジェクト大成功", desc: "「やりましたね部長！私たち最高じゃないですか！？」", effect: { inst_fairness: +5, inter_fairness: 0, autonomy: 0, competence: +15, psych_load: -5, phys_energy: -5 } },</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>{ title: "繁忙期突入", desc: "「終わらない...全然仕事が終わらないですよ...」", effect: { inst_fairness: 0, inter_fairness: 0, autonomy: -5, competence: 0, psych_load: +10, phys_energy: -15 } },</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>{ title: "理不尽なクレーム", desc: "「私、何も悪くないのに...もう疲れました...」", effect: { inst_fairness: 0, inter_fairness: 0, autonomy: -5, competence: -5, psych_load: +15, phys_energy: -10 } },</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>{ title: "新しいツールの導入", desc: "「これ凄い！面倒な作業が一瞬で終わります！」", effect: { inst_fairness: +5, inter_fairness: 0, autonomy: +5, competence: +5, psych_load: -5, phys_energy: +5 } }</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>];</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>function SubordinateSurvival() {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>const [gameState, setGameState] = useState('start');<span class="Apple-converted-space"> </span></span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>const [week, setWeek] = useState(1);</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>const [stats, setStats] = useState(generateInitialStats());</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>const [parameterChanges, setParameterChanges] = useState({});</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>const [lastMessage, setLastMessage] = useState("");</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>const [eventMessage, setEventMessage] = useState(null);</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>const [history, setHistory] = useState([]);</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>const [currentActions, setCurrentActions] = useState([]);</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>const [gameOverReason, setGameOverReason] = useState("");</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>const logsEndRef = useRef(null);</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>useEffect(() =&gt; {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>logsEndRef.current?.scrollIntoView({ behavior: "smooth" });</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>}, [history]);</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>// ゲーム開始</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>const startGame = () =&gt; {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>setStats(generateInitialStats());<span class="Apple-converted-space"> </span></span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>setParameterChanges({});</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>setWeek(1);</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>setGameState('playing');</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>setLastMessage("「今期もよろしくお願いします、部長！」");</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>setEventMessage(null);</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>setHistory([]);</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>pickRandomActions();</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>};</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>// 選択肢のランダム抽出</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>const pickRandomActions = () =&gt; {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>const shuffled = [...ACTIONS].sort(() =&gt; 0.5 - Math.random());</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>setCurrentActions(shuffled.slice(0, 3));</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>};</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>// アクション処理</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>const handleAction = (action) =&gt; {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>const changes = action.effect(stats);</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>let newStats = { ...stats };</span></p>
+<p class="p7"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>Object.keys(changes).forEach(key =&gt; {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>newStats[key] += changes[key];</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>});</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>setParameterChanges(changes);</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>let isSuccess = true;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>if (action.id === 'scold' &amp;&amp; stats.inter_fairness &lt;= 60) isSuccess = false;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>if (action.id === 'drink' &amp;&amp; changes.inter_fairness &lt; 0) isSuccess = false;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>if (action.id === 'praise' &amp;&amp; stats.competence &gt; 90) isSuccess = true;</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>const possibleMessages = action.getMessages(isSuccess);</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>const actionMsg = pickMsg(possibleMessages);</span></p>
+<p class="p7"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>setLastMessage(actionMsg);</span></p>
+<p class="p7"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>const newHistory = [...history, { week, type: 'action', text: `${action.label}: ${actionMsg}` }];</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>// ランダムイベント</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>let evtMsg = null;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>if (Math.random() &lt; 0.25 &amp;&amp; week &lt; MAX_WEEKS) {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>const evt = RANDOM_EVENTS[Math.floor(Math.random() * RANDOM_EVENTS.length)];</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>Object.keys(evt.effect).forEach(key =&gt; {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                        </span>newStats[key] += evt.effect[key];</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>});</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>evtMsg = evt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>newHistory.push({ week, type: 'event', text: `⚡ ${evt.desc}` });</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>setEventMessage(evtMsg);</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>setHistory(newHistory);</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>// 値の正規化</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>Object.keys(newStats).forEach(key =&gt; {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>newStats[key] = Math.max(0, Math.min(100, newStats[key]));</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>});</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>setStats(newStats);</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>checkGameState(newStats, week);</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>};</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>// ゲーム状態判定</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>const checkGameState = (currentStats, currentWeek) =&gt; {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>if (currentStats.psych_load &gt;= 100) { finishGame('burnout'); return; }</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>if (currentStats.phys_energy &lt;= 0) { finishGame('exhaustion'); return; }</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>if (currentStats.inst_fairness &lt;= 0 || currentStats.inter_fairness &lt;= 0) { finishGame('distrust'); return; }</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>if (currentStats.competence &lt;= 0) { finishGame('loss_confidence'); return; }</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>if (currentWeek &gt;= MAX_WEEKS) {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>finishGame('victory');</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>} else {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>setWeek(prev =&gt; prev + 1);</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>pickRandomActions();</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>};</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>const finishGame = (reason) =&gt; {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>let reasonText = "";</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>switch(reason) {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>case 'burnout': reasonText = "「もう無理です...会社に来るのが怖くて...」休職願が出されました。（原因：心理的負荷の限界）"; break;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>case 'exhaustion': reasonText = "深夜、部下がオフィスで倒れ救急搬送されました。（原因：身体的エネルギーの枯渇）"; break;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>case 'distrust': reasonText = "「この会社で正当に評価される未来が見えません。」退職届が出されました。（原因：公平性の欠如）"; break;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>case 'loss_confidence': reasonText = "「僕には荷が重すぎました...ご迷惑をおかけしました。」退職届が出されました。（原因：有用感の喪失）"; break;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>default: reasonText = "部下は退職しました。";</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>setGameOverReason(reasonText);</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>setGameState(reason === 'victory' ? 'victory' : 'gameover');</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>};</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>// --- 状態判定ロジック ---</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>const determineMentalStateId = (s) =&gt; {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>if (s.psych_load &gt; 85 || s.phys_energy &lt; 15 || s.inst_fairness &lt; 15 || s.inter_fairness &lt; 15) return 'turnover';<span class="Apple-converted-space"> </span></span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>if (s.inst_fairness &lt; 40 &amp;&amp; s.inter_fairness &lt; 40 &amp;&amp; s.phys_energy &gt; 40) return 'conflict';</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>if (s.autonomy &lt; 40 &amp;&amp; s.psych_load &lt; 60) return 'resignation';<span class="Apple-converted-space"> </span></span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>if (s.competence &lt; 40 &amp;&amp; s.autonomy &lt; 40) return 'quiet_quit';<span class="Apple-converted-space"> </span></span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>if (s.phys_energy &lt; 40 &amp;&amp; s.competence &lt; 40) return 'apathy';<span class="Apple-converted-space"> </span></span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>if (s.autonomy &gt; 60 &amp;&amp; s.competence &gt; 60 &amp;&amp; s.phys_energy &gt; 50 &amp;&amp; s.inst_fairness &gt; 50) return 'growth';<span class="Apple-converted-space"> </span></span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>return 'waver';<span class="Apple-converted-space"> </span></span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>};</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>const currentMentalStateId = determineMentalStateId(stats);</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>const currentStateIndex = MENTAL_STATES.findIndex(s =&gt; s.id === currentMentalStateId);</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>const rotationAngle = -currentStateIndex * (360 / MENTAL_STATES.length); // 円全体を回す角度</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>// --- UIコンポーネント ---</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>const ProgressBar = ({ label, value, change, color }) =&gt; (</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div className="mb-2.5 w-full"&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;div className="flex justify-between items-end text-xs text-white mb-0.5 px-0.5"&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;span className="font-medium bg-slate-900/50 px-1 rounded"&gt;{label}&lt;/span&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;div className="flex gap-1 items-baseline"&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                            </span>{change !== 0 &amp;&amp; change !== undefined &amp;&amp; (</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;span className={`text-[10px] ${change &gt; 0 ? 'text-green-300' : 'text-red-300'}`}&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                    </span>{change &gt; 0 ? '▲' : '▼'}{Math.abs(change)}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;/span&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                            </span>)}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;span className="font-mono font-bold text-sm"&gt;{value}&lt;/span&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;div className="w-full bg-slate-700/50 h-2.5 rounded-sm overflow-hidden backdrop-blur-sm border border-slate-600/50"&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;div<span class="Apple-converted-space"> </span></span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                            </span>className="h-full transition-all duration-500 rounded-sm"<span class="Apple-converted-space"> </span></span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                            </span>style={{ width: `${value}%`, backgroundColor: color }}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                        </span>/&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>);</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>return (</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div className="max-w-xl w-full bg-white rounded-xl shadow-2xl overflow-hidden border border-slate-200 flex flex-col max-h-[95vh]"&gt;</span></p>
+<p class="p7"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>{/* Header */}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;div className="bg-slate-800 text-white p-3 flex justify-between items-center shrink-0"&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;h1 className="font-bold text-lg flex items-center gap-2"&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;Briefcase size={20} /&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                            </span>組織心理学サバイバル</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;/h1&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;div className="text-sm bg-slate-700 px-3 py-1 rounded-full font-mono"&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                            </span>Week {gameState === 'start' ? 1 : week} / {MAX_WEEKS}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>{/* Start Screen */}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>{gameState === 'start' &amp;&amp; (</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;div className="p-8 text-center overflow-y-auto"&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;div className="mb-6 text-6xl"&gt;🏢&lt;/div&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;h2 className="text-2xl font-bold mb-4"&gt;マネジメント・サバイバル&lt;/h2&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;p className="text-gray-600 mb-8 leading-relaxed text-sm"&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                </span>あなたはマネージャーとして、&lt;br/&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                </span>部下の6つの心理パラメータを管理します。&lt;br/&gt;&lt;br/&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;strong&gt;部下の心理は常に変化（回転）します。&lt;/strong&gt;&lt;br/&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                </span>「現在の状態」が真上（12時）に来るようになっています。&lt;br/&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                </span>状態を見極め、「充実・成長」へ導いてください。</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;/p&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;button<span class="Apple-converted-space"> </span></span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                </span>onClick={startGame}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                </span>className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-lg shadow-lg"</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                            </span>&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                </span>マネジメント開始（初期ステータス生成）</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;/button&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>)}</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>{/* Main Game Screen */}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>{gameState === 'playing' &amp;&amp; (</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;div className="flex flex-col h-full overflow-hidden relative"&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;div className="p-2 overflow-y-auto flex-1 flex flex-col items-center"&gt;</span></p>
+<p class="p7"><span class="s1"><span class="Apple-converted-space">                                </span></span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                </span>{/* メッセージエリア */}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;div className="w-full mb-2 px-2 z-20 relative"&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;div className="bg-slate-100 px-4 py-3 rounded-lg text-sm text-slate-700 w-full text-center border border-slate-200 min-h-[3.5rem] flex items-center justify-center shadow-inner italic"&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                        </span>{lastMessage}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;/div&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                    </span>{eventMessage &amp;&amp; (</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                        </span>&lt;div className="bg-yellow-50 px-4 py-2 mt-1 rounded text-xs text-yellow-800 text-center border border-yellow-200 animate-pulse font-bold"&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                            </span>⚡ {eventMessage.title}: {eventMessage.desc}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                        </span>&lt;/div&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                    </span>)}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;/div&gt;</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                </span>{/* 円環状ステータスUI - 回転アニメーション対応 */}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;div className="relative w-[360px] h-[360px] mb-2 shrink-0 mx-auto flex items-center justify-center overflow-hidden"&gt;</span></p>
+<p class="p7"><span class="s1"><span class="Apple-converted-space">                                    </span></span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                    </span>{/* 回転するコンテナ */}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;div<span class="Apple-converted-space"> </span></span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                        </span>className="absolute w-full h-full flex items-center justify-center transition-transform duration-1000 ease-in-out"</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                        </span>style={{ transform: `rotate(${rotationAngle}deg)` }}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                    </span>&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                        </span>{/* 軌道の点線円 */}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                        </span>&lt;div className="absolute w-[300px] h-[300px] rounded-full border-2 border-dashed border-slate-300"&gt;&lt;/div&gt;</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                        </span>{/* 周囲のステータス円 */}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                        </span>{MENTAL_STATES.map((state, index) =&gt; {</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                            </span>const angle = index * (360 / MENTAL_STATES.length);</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                            </span>const radius = 150; // 円の半径</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                            </span>const isActive = state.id === currentMentalStateId;</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                            </span>return (</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                </span>&lt;div</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                    </span>key={state.id}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                    </span>className="absolute flex flex-col items-center justify-center text-center transition-all duration-500"</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                    </span>style={{</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                        </span>top: '50%',</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                        </span>left: '50%',</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                        </span>marginTop: '-3rem', // w-24 h-24 の半分</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                        </span>marginLeft: '-3rem',</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                        </span>transform: `rotate(${angle}deg) translate(0, -${radius}px) rotate(${-angle}deg) rotate(${-rotationAngle}deg)`<span class="Apple-converted-space"> </span></span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                        </span>// 最後のrotateは、親の回転を打ち消して文字を正立させるため</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                    </span>}}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                </span>&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                    </span>&lt;div<span class="Apple-converted-space"> </span></span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                        </span>className={`w-24 h-24 rounded-full flex flex-col items-center justify-center shadow-lg border-2 transition-all duration-500 ${isActive ? 'scale-110 ring-4 ring-offset-2 ring-yellow-200 font-bold z-10' : 'bg-white/90 border-slate-300 opacity-60'}`}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                        </span>style={{<span class="Apple-converted-space"> </span></span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                            </span>backgroundColor: isActive ? state.colorBg : undefined,</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                            </span>borderColor: isActive ? state.colorBorder : undefined</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                        </span>}}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                    </span>&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                        </span>&lt;span className="text-sm text-slate-800 leading-tight px-2"&gt;{state.label}&lt;/span&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                        </span>{state.subLabel &amp;&amp; &lt;span className="text-[10px] text-slate-500 mt-1"&gt;{state.subLabel}&lt;/span&gt;}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                    </span>&lt;/div&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                    </span>{isActive &amp;&amp; (</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                        </span>&lt;div className="absolute -bottom-8 bg-slate-800 text-white text-[10px] px-2 py-1 rounded shadow animate-bounce whitespace-nowrap z-20"&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                            </span>現在: {state.label}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                        </span>&lt;/div&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                    </span>)}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                </span>&lt;/div&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                            </span>);</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                        </span>})}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;/div&gt;</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                    </span>{/* 中央の黒円（パラメータコンテナ - 回転しない） */}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;div className="absolute w-60 h-60 bg-slate-800 rounded-full flex flex-col justify-center px-6 shadow-2xl z-30 border-4 border-slate-600"&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                        </span>&lt;ProgressBar label="公平性(制度)" value={stats.inst_fairness} change={parameterChanges.inst_fairness} color="#60A5FA" /&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                        </span>&lt;ProgressBar label="公平性(対人)" value={stats.inter_fairness} change={parameterChanges.inter_fairness} color="#818CF8" /&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                        </span>&lt;ProgressBar label="裁量感" value={stats.autonomy} change={parameterChanges.autonomy} color="#4ADE80" /&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                        </span>&lt;ProgressBar label="有用感" value={stats.competence} change={parameterChanges.competence} color="#2DD4BF" /&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                        </span>&lt;ProgressBar label="心理的負荷" value={stats.psych_load} change={parameterChanges.psych_load} color="#F472B6" /&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                        </span>&lt;ProgressBar label="身体エナジー" value={stats.phys_energy} change={parameterChanges.phys_energy} color="#FB923C" /&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;/div&gt;</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;/div&gt;</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                </span>{/* アクションボタン */}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;div className="w-full space-y-2 mt-2 z-20 relative"&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;h3 className="text-xs font-bold text-gray-500 mb-1 flex items-center gap-2"&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                        </span>&lt;Briefcase size={14} /&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                        </span>今週のアクション（ランダム選出）</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;/h3&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;div className="grid grid-cols-1 gap-2"&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                        </span>{currentActions.map((action) =&gt; (</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                            </span>&lt;button</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                </span>key={action.id}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                </span>onClick={() =&gt; handleAction(action)}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                </span>className="w-full text-left bg-white hover:bg-slate-50 border-2 border-slate-200 hover:border-blue-400 p-2.5 rounded-xl transition-all duration-200 group relative overflow-hidden shadow-sm active:scale-[0.98]"</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                            </span>&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                </span>&lt;div className="flex justify-between items-center relative z-10"&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                    </span>&lt;div className="flex-1 min-w-0"&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                        </span>&lt;span className="font-bold text-slate-800 text-sm block truncate"&gt;{action.label}&lt;/span&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                        </span>&lt;span className="text-[10px] text-slate-500 block truncate"&gt;{action.desc}&lt;/span&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                    </span>&lt;/div&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                    </span>&lt;div className="ml-2 bg-slate-50 text-slate-400 p-1.5 rounded-full group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors shrink-0"&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                        </span>{action.type === ActionType.COMMUNICATION &amp;&amp; &lt;MessageCircle size={16} /&gt;}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                        </span>{action.type === ActionType.WORK &amp;&amp; &lt;Briefcase size={16} /&gt;}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                        </span>{action.type === ActionType.REST &amp;&amp; &lt;Coffee size={16} /&gt;}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                    </span>&lt;/div&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                                </span>&lt;/div&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                            </span>&lt;/button&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                        </span>))}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;/div&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;/div&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                            </span>{/* 履歴ログ */}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;div className="bg-slate-100 border-t border-slate-200 p-2 h-20 shrink-0 z-20 relative"&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;h4 className="text-[10px] font-bold text-gray-500 mb-1 flex items-center gap-1"&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;History size={10} /&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                    </span>履歴</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;/h4&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;div className="h-full overflow-y-auto pb-4 text-[10px] space-y-1 pr-1 custom-scrollbar"&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                    </span>{history.map((log, i) =&gt; (</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                        </span>&lt;div key={i} className={`p-1 rounded ${log.type === 'event' ? 'bg-yellow-100 text-yellow-800' : 'bg-white text-gray-600 border border-slate-200'}`}&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                            </span>&lt;span className="font-mono text-gray-400 mr-1"&gt;W{log.week}&lt;/span&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                            </span>{log.text}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                        </span>&lt;/div&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                    </span>))}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;div ref={logsEndRef} /&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;/div&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>)}</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>{/* Game Over / Victory Screen */}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>{(gameState === 'gameover' || gameState === 'victory') &amp;&amp; (</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;div className={`p-8 text-center h-full overflow-y-auto flex flex-col justify-center ${gameState === 'victory' ? 'bg-blue-50' : 'bg-red-50'}`}&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                            </span>{gameState === 'victory' ? (</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;Award size={64} className="mx-auto text-yellow-500 mb-4" /&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;h2 className="text-xl font-bold text-blue-900 mb-2"&gt;QUARTER COMPLETE!&lt;/h2&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;p className="text-blue-700 mb-6 text-sm"&gt;マネジメント成功です&lt;/p&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;/&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                            </span>) : (</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;UserMinus size={64} className="mx-auto text-red-500 mb-4" /&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;h2 className="text-xl font-bold text-red-800 mb-2"&gt;GAME OVER&lt;/h2&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;div className="bg-white p-4 rounded-lg shadow-sm border border-red-100 mb-8 text-left relative mt-6"&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                        </span>&lt;div className="absolute -top-3 left-4 bg-red-100 text-red-800 text-xs px-2 py-1 rounded"&gt;退職/休職届&lt;/div&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                        </span>&lt;p className="text-gray-700 font-serif italic text-sm"&gt;{gameOverReason}&lt;/p&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                    </span>&lt;/div&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;/&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                            </span>)}</span></p>
+<p class="p7"><span class="s1"><span class="Apple-converted-space">                            </span></span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;button<span class="Apple-converted-space"> </span></span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                </span>onClick={startGame}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                </span>className={`w-full text-white font-bold py-3 rounded-lg shadow flex items-center justify-center gap-2 transition ${gameState === 'victory' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-slate-800 hover:bg-slate-900'}`}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                            </span>&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                </span>&lt;RefreshCw size={18} /&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                                </span>{gameState === 'victory' ? '次の期へ' : '再挑戦（初期値ランダム）'}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                            </span>&lt;/button&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                    </span>)}</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">            </span>);</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p7"><span class="s9"></span><br></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>const root = ReactDOM.createRoot(document.getElementById('root'));</span></p>
+<p class="p5"><span class="s1"><span class="Apple-converted-space">        </span>root.render(&lt;SubordinateSurvival /&gt;);</span></p>
+<p class="p2"><span class="s4"><span class="Apple-converted-space">    </span></span><span class="s3">&lt;/</span><span class="s1">script</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s3">&lt;/</span><span class="s1">body</span><span class="s3">&gt;</span></p>
+<p class="p2"><span class="s3">&lt;/</span><span class="s1">html</span><span class="s3">&gt;</span></p>
+</body>
+</html>
