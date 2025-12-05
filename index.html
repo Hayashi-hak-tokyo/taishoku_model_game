@@ -58,15 +58,15 @@
         // --- ゲーム定数 & データ ---
         const MAX_WEEKS = 12;
 
-        // 状態配列の順序と色をスクリーンショットに合わせて更新
+        // 状態配列：良 -> 悪 の順序
         const MENTAL_STATES = [
-            { id: 'growth', label: '充実・成長', subLabel: '理想', colorBg: '#D46B55', colorBorder: '#B95846' }, // 赤/オレンジ系
-            { id: 'waver', label: '揺らぎ・迷い', subLabel: '', colorBg: '#E6CBA9', colorBorder: '#C9AF8D' }, // ベージュ系
-            { id: 'conflict', label: '葛藤・抵抗', subLabel: '怒りと対立', colorBg: '#F3E5AB', colorBorder: '#D6C890' }, // 黄色/クリーム系
-            { id: 'resignation', label: '諦め・適応', subLabel: '', colorBg: '#BDDDB2', colorBorder: '#9FC194' }, // 緑系
-            { id: 'quiet_quit', label: '静かな退職', subLabel: '危険', colorBg: '#B3DFD7', colorBorder: '#93BFB7' }, // 青緑/ミント系
-            { id: 'apathy', label: '無関心', subLabel: '危険', colorBg: '#9BBBE3', colorBorder: '#7E9EC6' }, // 青系
-            { id: 'turnover', label: '退職・転出', subLabel: '即死', colorBg: '#9B88D6', colorBorder: '#7D6AB8' }, // 紫系
+            { id: 'growth', label: '充実・成長', subLabel: '理想', colorBg: '#D46B55', colorBorder: '#B95846' }, // 95点以上
+            { id: 'waver', label: '揺らぎ・迷い', subLabel: '', colorBg: '#E6CBA9', colorBorder: '#C9AF8D' }, // 80-95
+            { id: 'conflict', label: '葛藤・抵抗', subLabel: '怒りと対立', colorBg: '#F3E5AB', colorBorder: '#D6C890' }, // 65-80
+            { id: 'resignation', label: '諦め・適応', subLabel: '', colorBg: '#BDDDB2', colorBorder: '#9FC194' }, // 50-65
+            { id: 'quiet_quit', label: '静かな退職', subLabel: '危険', colorBg: '#B3DFD7', colorBorder: '#93BFB7' }, // 40-50
+            { id: 'apathy', label: '無関心', subLabel: '危険', colorBg: '#9BBBE3', colorBorder: '#7E9EC6' }, // 30-40
+            { id: 'turnover', label: '退職・転出', subLabel: '即死', colorBg: '#9B88D6', colorBorder: '#7D6AB8' }, // 30以下 or 0発生
         ];
 
         // 週ごとの環境状況
@@ -85,13 +85,14 @@
             { text: "ボーナス支給日が近く、皆の表情が明るい。", type: "good" }
         ];
 
+        // 初期ステータス生成（バランス調整）
         const generateInitialStats = () => ({
-            inst_fairness: Math.floor(30 + Math.random() * 40),
-            inter_fairness: Math.floor(30 + Math.random() * 40),
-            autonomy: Math.floor(30 + Math.random() * 40),
-            competence: Math.floor(30 + Math.random() * 40),
-            psych_load: Math.floor(20 + Math.random() * 30),
-            phys_energy: Math.floor(60 + Math.random() * 40)
+            inst_fairness: Math.floor(40 + Math.random() * 30),
+            inter_fairness: Math.floor(40 + Math.random() * 30),
+            autonomy: Math.floor(40 + Math.random() * 30),
+            competence: Math.floor(40 + Math.random() * 30),
+            psych_load: Math.floor(30 + Math.random() * 30), // 低い方が良い
+            phys_energy: Math.floor(50 + Math.random() * 40)
         });
 
         const ActionType = {
@@ -103,7 +104,7 @@
 
         const pickMsg = (messages) => messages[Math.floor(Math.random() * messages.length)];
 
-        // アクション定義
+        // アクション定義（変更なし）
         const ACTIONS = [
             {
                 id: 'praise',
@@ -363,59 +364,60 @@
                 logsEndRef.current?.scrollIntoView({ behavior: "smooth" });
             }, [history]);
 
-            // 状態判定ロジック（0判定とスコア基準の明確化）
+            // スコア計算ヘルパー
+            const calculateScore = (s) => {
+                return Math.floor((
+                    s.inst_fairness + 
+                    s.inter_fairness + 
+                    s.autonomy + 
+                    s.competence + 
+                    (100 - s.psych_load) + 
+                    s.phys_energy
+                ) / 6);
+            };
+
+            // 状態判定ロジック（スコア基準の再定義）
             const determineMentalStateId = (s) => {
                 // --- 1. 即死判定 (Turnover) ---
-                // いずれかのポジティブパラメータが0、または負荷が100
                 if (
-                    s.inst_fairness <= 0 || 
-                    s.inter_fairness <= 0 || 
-                    s.autonomy <= 0 || 
-                    s.competence <= 0 || 
-                    s.phys_energy <= 0 ||
-                    s.psych_load >= 100
+                    s.inst_fairness <= 0 || s.inter_fairness <= 0 || 
+                    s.autonomy <= 0 || s.competence <= 0 || 
+                    s.phys_energy <= 0 || s.psych_load >= 100
                 ) return 'turnover';
 
-                // 負荷が高すぎる、またはエネルギーが低すぎる場合も即死級とする
-                if (s.psych_load >= 90 || s.phys_energy <= 10) return 'turnover';
+                const avgScore = calculateScore(s);
 
-                // --- 2. 危険域判定 (Bad States) ---
-                
-                // 無関心 (Apathy): エネルギー不足、または有用感の欠如
-                // 「もうどうでもいい」状態
-                if (s.phys_energy < 30 || s.competence < 30) return 'apathy';
+                // --- 2. スコアに基づく状態判定 ---
+                // 退職・転出: 平均30以下
+                if (avgScore <= 30) return 'turnover';
 
-                // 静かな退職 (Quiet Quitting): 裁量感の欠如、または制度的不公平感
-                // 「言われたことだけやる」状態
-                if (s.autonomy < 30 || s.inst_fairness < 30) return 'quiet_quit';
+                // 無関心: 30超〜40以下
+                if (avgScore <= 40) return 'apathy';
 
-                // --- 3. 警告域判定 (Warning States) ---
+                // 静かな退職: 40超〜50以下
+                if (avgScore <= 50) return 'quiet_quit';
 
-                // 葛藤・抵抗 (Conflict): 対人関係や評価への不満があるが、エネルギーはある
-                // 「納得いかない」と反発している状態
-                if ((s.inter_fairness < 40 || s.inst_fairness < 40) && s.phys_energy > 50) return 'conflict';
+                // 諦め・適応: 50超〜65以下
+                if (avgScore <= 65) return 'resignation';
 
-                // 諦め・適応 (Resignation): 負荷が高い、またはある程度の不満があるが、波風立てない
-                // 「こんなもんだろう」と諦めている状態
-                if (s.psych_load > 70 || (s.autonomy < 50 && s.competence < 50)) return 'resignation';
+                // 葛藤・抵抗: 65超〜80以下
+                if (avgScore <= 80) return 'conflict';
 
-                // --- 4. 理想域判定 (Good States) ---
+                // 揺らぎ・迷い: 80超〜95未満
+                if (avgScore < 95) return 'waver';
 
-                // 充実・成長 (Growth): 全体的に高水準でバランスが取れている
-                // フロー状態に近い
+                // 充実・成長: 全て95以上 (AND条件)
                 if (
-                    s.inst_fairness >= 60 &&
-                    s.inter_fairness >= 60 &&
-                    s.autonomy >= 60 &&
-                    s.competence >= 60 &&
-                    s.phys_energy >= 50 &&
-                    s.psych_load <= 50
+                    s.inst_fairness >= 95 &&
+                    s.inter_fairness >= 95 &&
+                    s.autonomy >= 95 &&
+                    s.competence >= 95 &&
+                    s.phys_energy >= 95 &&
+                    s.psych_load <= 5
                 ) return 'growth';
 
-                // --- 5. 通常域 (Default) ---
-                
-                // 揺らぎ・迷い (Waver): どっちつかずの状態
-                return 'waver'; 
+                // スコアは高いが全パラメータ95以上ではない場合、揺らぎ・迷い（または葛藤）にとどめる
+                return 'waver';
             };
 
             const updateWeeklySituation = () => {
@@ -490,15 +492,12 @@
             const checkGameState = (currentStats, currentWeek) => {
                 const currentState = determineMentalStateId(currentStats);
                 
-                // 1. 即死判定 (Turnoverになった瞬間)
                 if (currentState === 'turnover') {
                     finishGame('turnover', currentStats);
                     return;
                 }
 
-                // 2. 期間終了判定
                 if (currentWeek >= MAX_WEEKS) {
-                    // 終了時に「静かな退職」「無関心」「退職・転出」の場合は敗北
                     if (['quiet_quit', 'apathy', 'turnover'].includes(currentState)) {
                         finishGame('quiet_quit_end', currentStats);
                     } else {
@@ -516,16 +515,9 @@
                 let calculatedScore = 0;
 
                 if (reason === 'victory') {
-                    const total = 
-                        finalStats.inst_fairness + 
-                        finalStats.inter_fairness + 
-                        finalStats.autonomy + 
-                        finalStats.competence + 
-                        (100 - finalStats.psych_load) + 
-                        finalStats.phys_energy;
-                    calculatedScore = Math.floor(total / 6);
+                    calculatedScore = calculateScore(finalStats);
                 } else {
-                    calculatedScore = 0; // それ以外は0点
+                    calculatedScore = 0; 
                 }
 
                 switch(reason) {
@@ -535,7 +527,7 @@
                         }
                         else if(finalStats.psych_load >= 90) reasonText = "「もう無理です...会社に来るのが怖くて...」休職願が出されました。（原因：心理的負荷の限界）";
                         else if(finalStats.phys_energy <= 10) reasonText = "深夜、部下がオフィスで倒れ救急搬送されました。（原因：身体的エネルギーの枯渇）";
-                        else reasonText = "「この会社には未来がありません。」退職届が叩きつけられました。（原因：公平性の欠如）";
+                        else reasonText = "「この会社には未来がありません。」退職届が叩きつけられました。（原因：公平性の欠如、または総合的な不満）";
                         break;
                     case 'quiet_quit_end':
                         reasonText = "期間満了ですが、部下は完全にやる気を失っています。「言われたことだけやります...」事実上のマネジメント敗北です。（原因：静かな退職・無関心）";
@@ -554,7 +546,24 @@
 
             const currentMentalStateId = determineMentalStateId(stats);
             const currentStateIndex = MENTAL_STATES.findIndex(s => s.id === currentMentalStateId);
-            const rotationAngle = -currentStateIndex * (360 / MENTAL_STATES.length); 
+            
+            // 回転方向の制御：
+            // 配列は「良 -> 悪」の順（時計回り）。
+            // 悪化（index増）すると、ターゲット位置は時計回り方向に進む。
+            // 12時位置に持ってくるには、円盤全体を「反時計回り（マイナス角）」に回す必要がある？
+            // いや、待てよ。
+            // 配置：0:充実(0度), 1:揺らぎ(51度), 2:葛藤(102度)... (時計回り配置)
+            // 現在：充実(0)。回転0。
+            // 次：揺らぎ(1)。揺らぎを12時(0度)にしたい。
+            // 配置されている「51度」のものを「0度」にするには、-51度（反時計回り）の回転が必要。
+            // ユーザー要望：「悪くなるときは時計回り」。
+            // つまり、悪化（0->1）のとき、回転角はプラスになりたい。
+            // そのためには、配置が「反時計回り」である必要がある。
+            // 配置：0:充実(0度), 1:揺らぎ(-51度), 2:葛藤(-102度)...
+            // これなら、揺らぎ(-51度)を0度にするには、+51度（時計回り）の回転が必要。
+            // よって、描画時の配置角度をマイナスにする。
+            
+            const rotationAngle = currentStateIndex * (360 / MENTAL_STATES.length); 
 
             // --- UIコンポーネント ---
 
@@ -603,10 +612,11 @@
                                 あなたはマネージャーとして、部下の6つの心理パラメータを管理します。<br/>
                                 <br/>
                                 <strong>⚠️ ゲームオーバー条件:</strong><br/>
-                                1. いずれかのパラメータが0になる、または「退職・転出」状態になる<br/>
-                                2. 期間終了時に「静かな退職」または「無関心」状態であること<br/>
+                                1. いずれかのパラメータが0になる<br/>
+                                2. 平均スコアが30以下になる<br/>
+                                3. 期間終了時に「静かな退職」以下の状態であること<br/>
                                 <br/>
-                                些細な選択が命取りになります。慎重に、時に大胆に指示を出してください。
+                                理想の「充実・成長」状態（全パラメータ95以上）を目指してください。
                             </p>
                             <button 
                                 onClick={startGame}
@@ -630,7 +640,8 @@
                                     >
                                         <div className="absolute w-[340px] h-[340px] rounded-full border-2 border-dashed border-slate-300"></div>
                                         {MENTAL_STATES.map((state, index) => {
-                                            const angle = index * (360 / MENTAL_STATES.length);
+                                            // 反時計回りに配置することで、悪化（index増）時に時計回り回転を実現
+                                            const angle = -index * (360 / MENTAL_STATES.length);
                                             const radius = 170; 
                                             const isActive = state.id === currentMentalStateId;
                                             return (
