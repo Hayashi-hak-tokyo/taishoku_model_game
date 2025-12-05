@@ -268,6 +268,7 @@
             const [currentActions, setCurrentActions] = useState([]);
             const [gameOverReason, setGameOverReason] = useState("");
             const [currentSituation, setCurrentSituation] = useState(WEEKLY_SITUATIONS[0]);
+            const [score, setScore] = useState(0); // スコア用State追加
             const logsEndRef = useRef(null);
 
             useEffect(() => {
@@ -347,13 +348,14 @@
 
             // ゲーム状態判定
             const checkGameState = (currentStats, currentWeek) => {
-                if (currentStats.psych_load >= 100) { finishGame('burnout'); return; }
-                if (currentStats.phys_energy <= 0) { finishGame('exhaustion'); return; }
-                if (currentStats.inst_fairness <= 0 || currentStats.inter_fairness <= 0) { finishGame('distrust'); return; }
-                if (currentStats.competence <= 0) { finishGame('loss_confidence'); return; }
+                // ここでcurrentStatsを渡すように変更
+                if (currentStats.psych_load >= 100) { finishGame('burnout', currentStats); return; }
+                if (currentStats.phys_energy <= 0) { finishGame('exhaustion', currentStats); return; }
+                if (currentStats.inst_fairness <= 0 || currentStats.inter_fairness <= 0) { finishGame('distrust', currentStats); return; }
+                if (currentStats.competence <= 0) { finishGame('loss_confidence', currentStats); return; }
 
                 if (currentWeek >= MAX_WEEKS) {
-                    finishGame('victory');
+                    finishGame('victory', currentStats);
                 } else {
                     setWeek(prev => prev + 1);
                     updateWeeklySituation(); // 週が変わるときに状況を更新
@@ -361,8 +363,25 @@
                 }
             };
 
-            const finishGame = (reason) => {
+            const finishGame = (reason, finalStats) => {
                 let reasonText = "";
+                let calculatedScore = 0;
+
+                // スコア計算
+                if (reason === 'victory') {
+                    // 心理的負荷(psych_load)は低い方が良いので (100 - 値) として加算
+                    const total = 
+                        finalStats.inst_fairness + 
+                        finalStats.inter_fairness + 
+                        finalStats.autonomy + 
+                        finalStats.competence + 
+                        (100 - finalStats.psych_load) + 
+                        finalStats.phys_energy;
+                    calculatedScore = Math.floor(total / 6);
+                } else {
+                    calculatedScore = 0; // 退職時は強制0点
+                }
+
                 switch(reason) {
                     case 'burnout': reasonText = "「もう無理です...会社に来るのが怖くて...」休職願が出されました。（原因：心理的負荷の限界）"; break;
                     case 'exhaustion': reasonText = "深夜、部下がオフィスで倒れ救急搬送されました。（原因：身体的エネルギーの枯渇）"; break;
@@ -370,6 +389,8 @@
                     case 'loss_confidence': reasonText = "「僕には荷が重すぎました...ご迷惑をおかけしました。」退職届が出されました。（原因：有用感の喪失）"; break;
                     default: reasonText = "部下は退職しました。";
                 }
+                
+                setScore(calculatedScore);
                 setGameOverReason(reasonText);
                 setGameState(reason === 'victory' ? 'victory' : 'gameover');
             };
@@ -610,13 +631,15 @@
                             {gameState === 'victory' ? (
                                 <>
                                     <Award size={80} className="mx-auto text-yellow-500 mb-6" />
-                                    <h2 className="text-3xl font-bold text-blue-900 mb-3">QUARTER COMPLETE!</h2>
+                                    <h2 className="text-3xl font-bold text-blue-900 mb-2">QUARTER COMPLETE!</h2>
+                                    <div className="text-5xl font-bold text-blue-600 mb-4">{score}<span className="text-2xl text-blue-400">点</span></div>
                                     <p className="text-blue-700 mb-8 text-lg">マネジメント成功です。素晴らしいリーダーシップでした！</p>
                                 </>
                             ) : (
                                 <>
                                     <UserMinus size={80} className="mx-auto text-red-500 mb-6" />
-                                    <h2 className="text-3xl font-bold text-red-800 mb-3">GAME OVER</h2>
+                                    <h2 className="text-3xl font-bold text-red-800 mb-2">GAME OVER</h2>
+                                    <div className="text-5xl font-bold text-gray-400 mb-4">0<span className="text-2xl text-gray-300">点</span></div>
                                     <div className="bg-white p-6 rounded-xl shadow-md border border-red-100 mb-10 text-left relative mt-4 max-w-lg w-full">
                                         <div className="absolute -top-3 left-6 bg-red-100 text-red-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">退職/休職届</div>
                                         <p className="text-gray-700 font-serif italic text-lg leading-relaxed mt-2">"{gameOverReason}"</p>
