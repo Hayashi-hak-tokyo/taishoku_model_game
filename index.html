@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>部下の感情マネジメント</title>
+    <title>感情マネジメントシミュレーションゲーム</title>
     <!-- Tailwind CSS (デザイン用) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- React & ReactDOM (ゲームエンジン) -->
@@ -13,33 +13,21 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
     <style>
-        /* スクロールバーのカスタマイズ */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 3px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-        body {
-            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
-        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        body { font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif; }
     </style>
 </head>
 <body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
 
-    <div id="root" class="w-full max-w-5xl h-[90vh]"></div>
+    <div id="root" class="w-full max-w-6xl h-[95vh]"></div>
 
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        // --- アイコンコンポーネント (SVG) ---
+        // --- アイコンコンポーネント ---
         const IconBase = ({ children, color = "currentColor", size = 24, ...props }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>{children}</svg>
         );
@@ -54,24 +42,30 @@
         const Zap = (p) => <IconBase {...p}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></IconBase>;
         const Eye = (p) => <IconBase {...p}><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></IconBase>;
         const Ghost = (p) => <IconBase {...p}><path d="M9 10h.01"/><path d="M15 10h.01"/><path d="M12 2a8 8 0 0 0-8 8v12l3-3 2.5 2.5L12 19l2.5 2.5L17 19l3 3V10a8 8 0 0 0-8-8z"/></IconBase>;
-        const User = (p) => <IconBase {...p}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></IconBase>;
-        const UserCheck = (p) => <IconBase {...p}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></IconBase>;
+        const Copy = (p) => <IconBase {...p}><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></IconBase>;
+        const BarChart = (p) => <IconBase {...p}><line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/></IconBase>;
 
-        // --- ゲーム定数 & データ ---
+        // --- 定数 ---
         const MAX_WEEKS = 12;
-
-        // 状態配列：良 -> 悪 の順序
         const MENTAL_STATES = [
-            { id: 'growth', label: '充実・成長', subLabel: '理想', colorBg: '#D46B55', colorBorder: '#B95846' }, // 95点以上
-            { id: 'waver', label: '揺らぎ・迷い', subLabel: '', colorBg: '#E6CBA9', colorBorder: '#C9AF8D' }, // 80-95
-            { id: 'conflict', label: '葛藤・抵抗', subLabel: '怒りと対立', colorBg: '#F3E5AB', colorBorder: '#D6C890' }, // 65-80
-            { id: 'resignation', label: '諦め・適応', subLabel: '', colorBg: '#BDDDB2', colorBorder: '#9FC194' }, // 50-65
-            { id: 'quiet_quit', label: '静かな退職', subLabel: '危険', colorBg: '#B3DFD7', colorBorder: '#93BFB7' }, // 40-50
-            { id: 'apathy', label: '無関心', subLabel: '危険', colorBg: '#9BBBE3', colorBorder: '#7E9EC6' }, // 30-40
-            { id: 'turnover', label: '退職・転出', subLabel: '即死', colorBg: '#9B88D6', colorBorder: '#7D6AB8' }, // 30以下 or 0発生
+            { id: 'growth', label: '充実・成長', subLabel: '理想', colorBg: '#D46B55', colorBorder: '#B95846' },
+            { id: 'waver', label: '揺らぎ・迷い', subLabel: '', colorBg: '#E6CBA9', colorBorder: '#C9AF8D' },
+            { id: 'conflict', label: '葛藤・抵抗', subLabel: '怒りと対立', colorBg: '#F3E5AB', colorBorder: '#D6C890' },
+            { id: 'resignation', label: '諦め・適応', subLabel: '', colorBg: '#BDDDB2', colorBorder: '#9FC194' },
+            { id: 'quiet_quit', label: '静かな退職', subLabel: '危険', colorBg: '#B3DFD7', colorBorder: '#93BFB7' },
+            { id: 'apathy', label: '無関心', subLabel: '危険', colorBg: '#9BBBE3', colorBorder: '#7E9EC6' },
+            { id: 'turnover', label: '退職・転出', subLabel: '即死', colorBg: '#9B88D6', colorBorder: '#7D6AB8' },
         ];
+        
+        const PARAM_LABELS = {
+            inst_fairness: "公平性(制度)",
+            inter_fairness: "公平性(対人)",
+            autonomy: "裁量感",
+            competence: "有用感",
+            psych_load: "心理的負荷",
+            phys_energy: "身体エナジー"
+        };
 
-        // 週ごとの環境状況
         const WEEKLY_SITUATIONS = [
             { text: "決算前の繁忙期で、オフィス全体がピリピリしている。", type: "busy" },
             { text: "業界最大手の不祥事がニュースになり、顧客対応に追われている。", type: "trouble" },
@@ -87,256 +81,87 @@
             { text: "ボーナス支給日が近く、皆の表情が明るい。", type: "good" }
         ];
 
-        // 初期ステータス生成（バランス調整）
+        // 初期ステータス
         const generateInitialStats = () => ({
             inst_fairness: Math.floor(40 + Math.random() * 30),
             inter_fairness: Math.floor(40 + Math.random() * 30),
             autonomy: Math.floor(40 + Math.random() * 30),
             competence: Math.floor(40 + Math.random() * 30),
-            psych_load: Math.floor(30 + Math.random() * 30), // 低い方が良い
+            psych_load: Math.floor(30 + Math.random() * 30),
             phys_energy: Math.floor(50 + Math.random() * 40)
         });
 
-        const ActionType = {
-            WORK: 'work',
-            COMMUNICATION: 'comm',
-            REST: 'rest',
-            WAIT: 'wait'
-        };
-
+        const ActionType = { WORK: 'work', COMMUNICATION: 'comm', REST: 'rest', WAIT: 'wait' };
         const pickMsg = (messages) => messages[Math.floor(Math.random() * messages.length)];
 
-        // アクション定義（変更なし）
+        // アクションリスト（省略せず全て記述）
         const ACTIONS = [
             {
-                id: 'praise',
-                label: '成果を褒める',
-                type: ActionType.COMMUNICATION,
-                desc: '具体的な成果を承認する',
+                id: 'praise', label: '成果を褒める', type: ActionType.COMMUNICATION, desc: '具体的な成果を承認する',
                 effect: (stats) => {
-                    if (Math.random() < 0.2) {
-                        return { 
-                            diff: { inst_fairness: -5, inter_fairness: -10, competence: -5, psych_load: +20, phys_energy: 0 },
-                            result: 'bad'
-                        };
-                    }
-                    return { 
-                        diff: { inst_fairness: +5, inter_fairness: +15, autonomy: 0, competence: +20, psych_load: -10, phys_energy: 0 },
-                        result: 'good'
-                    };
+                    if (Math.random() < 0.2) return { diff: { inst_fairness: -5, inter_fairness: -10, competence: -5, psych_load: +20, phys_energy: 0 }, result: 'bad' };
+                    return { diff: { inst_fairness: +5, inter_fairness: +15, autonomy: 0, competence: +20, psych_load: -10, phys_energy: 0 }, result: 'good' };
                 },
-                getMessages: (result) => result === 'good' ? [
-                    "「ありがとうございます！そこ、こだわったんです！」部下は嬉しそうに頭をかいた。",
-                    "「部長にそう言ってもらえると、自信になります！」声色が明るくなった。",
-                    "「やった！次はもっといいもの作りますね！」モチベーションが爆上がりしたようだ。"
-                ] : [
-                    "「あ、はい...プレッシャーですね...」かえって緊張させてしまった。",
-                    "「お世辞はいいですよ...」心に壁を作られてしまったようだ。",
-                    "「結果しか見てないんですね...」プロセスの苦労を無視されたと感じたようだ。"
-                ]
+                getMessages: (result) => result === 'good' ? ["「ありがとうございます！そこ、こだわったんです！」", "「部長にそう言ってもらえると、自信になります！」", "「やった！次はもっといいもの作りますね！」"] : ["「あ、はい...プレッシャーですね...」", "「お世辞はいいですよ...」", "「結果しか見てないんですね...」"]
             },
             {
-                id: 'scold',
-                label: '厳しく指導',
-                type: ActionType.WORK,
-                desc: '改善点を指摘し修正させる',
+                id: 'scold', label: '厳しく指導', type: ActionType.WORK, desc: '改善点を指摘し修正させる',
                 effect: (stats) => {
                     const successRate = stats.inter_fairness > 60 ? 0.7 : 0.3;
-                    if (Math.random() < successRate) {
-                        return {
-                            diff: { inst_fairness: +15, inter_fairness: 0, autonomy: -5, competence: +15, psych_load: +20, phys_energy: -10 },
-                            result: 'good'
-                        };
-                    } else {
-                        return {
-                            diff: { inst_fairness: 0, inter_fairness: -30, autonomy: -10, competence: -20, psych_load: +40, phys_energy: -20 },
-                            result: 'bad'
-                        };
-                    }
+                    if (Math.random() < successRate) return { diff: { inst_fairness: +15, inter_fairness: 0, autonomy: -5, competence: +15, psych_load: +20, phys_energy: -10 }, result: 'good' };
+                    return { diff: { inst_fairness: 0, inter_fairness: -30, autonomy: -10, competence: -20, psych_load: +40, phys_energy: -20 }, result: 'bad' };
                 },
-                getMessages: (result) => result === 'good' ? [
-                    "「確かにそうですね...。次からは絶対に気をつけます！」真剣な眼差しでメモを取っている。",
-                    "「ご指摘ありがとうございます。すぐに修正します！」",
-                    "「うっ...痛いところを...。でも、おっしゃる通りです。」成長の糧として受け止めたようだ。"
-                ] : [
-                    "「すいません...（なんで自分ばっかり...）」部下は唇を噛み締め、深く傷ついたようだ。",
-                    "「...はい、わかりました。」納得いかない表情で、小さなため息が聞こえた。",
-                    "「（また怒られた...もう嫌だな...）」完全に委縮し、やる気を失わせてしまった。"
-                ]
+                getMessages: (result) => result === 'good' ? ["「確かにそうですね...。次からは絶対に気をつけます！」", "「ご指摘ありがとうございます。すぐに修正します！」", "「うっ...痛いところを...。でも、おっしゃる通りです。」"] : ["「すいません...（なんで自分ばっかり...）」", "「...はい、わかりました。」", "「（また怒られた...もう嫌だな...）」"]
             },
             {
-                id: 'delegate',
-                label: '仕事を任せる',
-                type: ActionType.WORK,
-                desc: '権限委譲して見守る',
+                id: 'delegate', label: '仕事を任せる', type: ActionType.WORK, desc: '権限委譲して見守る',
                 effect: (stats) => {
-                    if (Math.random() < 0.3) {
-                        return {
-                            diff: { inst_fairness: -10, inter_fairness: -10, autonomy: +5, competence: -10, psych_load: +30, phys_energy: -20 },
-                            result: 'bad'
-                        };
-                    }
-                    return {
-                        diff: { inst_fairness: 0, inter_fairness: +5, autonomy: +25, competence: +15, psych_load: +15, phys_energy: -15 },
-                        result: 'good'
-                    };
+                    if (Math.random() < 0.3) return { diff: { inst_fairness: -10, inter_fairness: -10, autonomy: +5, competence: -10, psych_load: +30, phys_energy: -20 }, result: 'bad' };
+                    return { diff: { inst_fairness: 0, inter_fairness: +5, autonomy: +25, competence: +15, psych_load: +15, phys_energy: -15 }, result: 'good' };
                 },
-                getMessages: (result) => result === 'good' ? [
-                    "「これ、僕がやっていいんですか？ やります！」目を輝かせて資料を受け取った。",
-                    "「責任重大ですね...でも、チャンスだと思って頑張ります！」意気に感じている。",
-                    "「任せてください！期待以上の結果を出してみせますよ。」"
-                ] : [
-                    "「え、これ僕がやるんですか...？」明らかに困惑している。",
-                    "「丸投げですか...わかりました...」不満げに資料を受け取った。",
-                    "「今の業務量でこれ以上は...」キャパオーバーを起こしそうだ。"
-                ]
+                getMessages: (result) => result === 'good' ? ["「これ、僕がやっていいんですか？ やります！」", "「責任重大ですね...でも、チャンスだと思って頑張ります！」", "「任せてください！期待以上の結果を出してみせますよ。」"] : ["「え、これ僕がやるんですか...？」", "「丸投げですか...わかりました...」", "「今の業務量でこれ以上は...」"]
             },
             {
-                id: 'micro_manage',
-                label: '細かく指示出し',
-                type: ActionType.WORK,
-                desc: '進捗を細部まで管理する',
+                id: 'micro_manage', label: '細かく指示出し', type: ActionType.WORK, desc: '進捗を細部まで管理する',
                 effect: (stats) => {
-                    if (Math.random() < 0.2) {
-                        return {
-                            diff: { inst_fairness: +10, inter_fairness: +10, autonomy: -10, competence: 0, psych_load: -10, phys_energy: -5 },
-                            result: 'good'
-                        };
-                    }
-                    return {
-                        diff: { inst_fairness: +10, inter_fairness: -5, autonomy: -30, competence: -10, psych_load: +10, phys_energy: -10 },
-                        result: 'bad' 
-                    };
+                    if (Math.random() < 0.2) return { diff: { inst_fairness: +10, inter_fairness: +10, autonomy: -10, competence: 0, psych_load: -10, phys_energy: -5 }, result: 'good' };
+                    return { diff: { inst_fairness: +10, inter_fairness: -5, autonomy: -30, competence: -10, psych_load: +10, phys_energy: -10 }, result: 'bad' };
                 },
-                getMessages: (result) => result === 'good' ? [
-                    "「細かく見てもらえて助かります！迷わずに進めそうです。」意外にも感謝された。",
-                    "「一人だと不安だったので、指示があって安心しました。」"
-                ] : [
-                    "「あ、はい。その通りに進めます...」部下の表情から生気が消えた。",
-                    "「報告ですね。ええと、今は...」監視されていると感じ、疲弊している。",
-                    "「細部まで確認ありがとうございます...」皮肉めいた響きが混じっている。"
-                ]
+                getMessages: (result) => result === 'good' ? ["「細かく見てもらえて助かります！迷わずに進めそうです。」", "「一人だと不安だったので、指示があって安心しました。」"] : ["「あ、はい。その通りに進めます...」", "「報告ですね。ええと、今は...」", "「細部まで確認ありがとうございます...」"]
             },
             {
-                id: 'listen',
-                label: '1on1で傾聴',
-                type: ActionType.COMMUNICATION,
-                desc: '不満やキャリアの相談に乗る',
+                id: 'listen', label: '1on1で傾聴', type: ActionType.COMMUNICATION, desc: '不満やキャリアの相談に乗る',
                 effect: (stats) => {
-                    if (Math.random() < 0.1) {
-                        return {
-                            diff: { inst_fairness: -15, inter_fairness: -5, autonomy: 0, competence: 0, psych_load: +5, phys_energy: 0 },
-                            result: 'bad'
-                        };
-                    }
-                    return {
-                        diff: { inst_fairness: +5, inter_fairness: +25, autonomy: +5, competence: +5, psych_load: -20, phys_energy: 0 },
-                        result: 'good'
-                    };
+                    if (Math.random() < 0.1) return { diff: { inst_fairness: -15, inter_fairness: -5, autonomy: 0, competence: 0, psych_load: +5, phys_energy: 0 }, result: 'bad' };
+                    return { diff: { inst_fairness: +5, inter_fairness: +25, autonomy: +5, competence: +5, psych_load: -20, phys_energy: 0 }, result: 'good' };
                 },
-                getMessages: (result) => result === 'good' ? [
-                    "「実は最近、少し悩んでいて...」部下は堰を切ったように話し始めた。",
-                    "「部長とこうして話せると、頭の中が整理できます。」表情が晴れやかになった。",
-                    "「あー、スッキリしました！ 聞いてもらえてよかったです。」信頼関係が深まった。"
-                ] : [
-                    "「聞くだけなら誰でもできますよね...」具体的な解決策がないことに失望されたようだ。",
-                    "「話しても無駄でしたね...」かえって不信感を招いてしまった。"
-                ]
+                getMessages: (result) => result === 'good' ? ["「実は最近、少し悩んでいて...」", "「部長とこうして話せると、頭の中が整理できます。」", "「あー、スッキリしました！ 聞いてもらえてよかったです。」"] : ["「聞くだけなら誰でもできますよね...」", "「話しても無駄でしたね...」"]
             },
             {
-                id: 'rest',
-                label: '休息を促す',
-                type: ActionType.REST,
-                desc: '早帰りを推奨する',
+                id: 'rest', label: '休息を促す', type: ActionType.REST, desc: '早帰りを推奨する',
                 effect: (stats) => {
-                    if (Math.random() < 0.2) {
-                        return {
-                            diff: { inst_fairness: 0, inter_fairness: -5, autonomy: -10, competence: 0, psych_load: +15, phys_energy: +5 },
-                            result: 'bad'
-                        };
-                    }
-                    return {
-                        diff: { inst_fairness: 0, inter_fairness: +10, autonomy: 0, competence: 0, psych_load: -20, phys_energy: +30 },
-                        result: 'good'
-                    };
+                    if (Math.random() < 0.2) return { diff: { inst_fairness: 0, inter_fairness: -5, autonomy: -10, competence: 0, psych_load: +15, phys_energy: +5 }, result: 'bad' };
+                    return { diff: { inst_fairness: 0, inter_fairness: +10, autonomy: 0, competence: 0, psych_load: -20, phys_energy: +30 }, result: 'good' };
                 },
-                getMessages: (result) => result === 'good' ? [
-                    "「え、いいんですか？ じゃあ、お言葉に甘えて...」部下は安堵の表情で帰宅した。",
-                    "「助かります...最近ちょっと寝不足気味だったので。」体力が大幅に回復したようだ。",
-                    "「ありがとうございます！リフレッシュしてきます！」"
-                ] : [
-                    "「今帰れって言われても、明日困るだけなんですけど...」仕事を残して帰ることにストレスを感じている。",
-                    "「はあ...わかりました（家でやろう...）」結局持ち帰って仕事をするようだ。"
-                ]
+                getMessages: (result) => result === 'good' ? ["「え、いいんですか？ じゃあ、お言葉に甘えて...」", "「助かります...最近ちょっと寝不足気味だったので。」", "「ありがとうございます！リフレッシュしてきます！」"] : ["「今帰れって言われても、明日困るだけなんですけど...」", "「はあ...わかりました（家でやろう...）」"]
             },
             {
-                id: 'drink',
-                label: '飲みニケーション',
-                type: ActionType.REST,
-                desc: '腹を割って話す',
+                id: 'drink', label: '飲みニケーション', type: ActionType.REST, desc: '腹を割って話す',
                 effect: (stats) => {
-                    if (Math.random() < 0.5) {
-                        return {
-                            diff: { inst_fairness: 0, inter_fairness: -15, autonomy: 0, competence: 0, psych_load: +15, phys_energy: -20 },
-                            result: 'bad'
-                        };
-                    }
-                    return {
-                        diff: { inst_fairness: 0, inter_fairness: +30, autonomy: 0, competence: +10, psych_load: -15, phys_energy: -10 },
-                        result: 'good'
-                    };
+                    if (Math.random() < 0.5) return { diff: { inst_fairness: 0, inter_fairness: -15, autonomy: 0, competence: 0, psych_load: +15, phys_energy: -20 }, result: 'bad' };
+                    return { diff: { inst_fairness: 0, inter_fairness: +30, autonomy: 0, competence: +10, psych_load: -15, phys_energy: -10 }, result: 'good' };
                 },
-                getMessages: (result) => result === 'good' ? [
-                    "「いやー、部長がそんな過去を持ってたとは！面白いです！」酒の席で意気投合した。",
-                    "「ぶっちゃけますけど...部長のこと、最初は怖かったんですよ（笑）」本音で語り合えた。",
-                    "最高に盛り上がり、固い握手を交わして別れた。"
-                ] : [
-                    "「あ、明日早いんで、そろそろ...」部下は時計をチラチラ見ている。",
-                    "「はは...そうですね...」愛想笑いの連続で、気まずい空気が流れた。",
-                    "「すいません、ちょっと酔いが回っちゃって...」部下を疲弊させてしまっただけだった。"
-                ]
+                getMessages: (result) => result === 'good' ? ["「いやー、部長がそんな過去を持ってたとは！面白いです！」", "「ぶっちゃけますけど...部長のこと、最初は怖かったんですよ（笑）」", "最高に盛り上がり、固い握手を交わして別れた。"] : ["「あ、明日早いんで、そろそろ...」", "「はは...そうですね...」", "「すいません、ちょっと酔いが回っちゃって...」"]
             },
             {
-                id: 'wait',
-                label: 'そっとしておく',
-                type: ActionType.WAIT,
-                desc: '何もせず様子を見る',
+                id: 'wait', label: 'そっとしておく', type: ActionType.WAIT, desc: '何もせず様子を見る',
                 effect: (stats) => {
                     const rand = Math.random();
-                    if (rand < 0.3) {
-                        return {
-                            diff: { inst_fairness: 0, inter_fairness: 0, autonomy: +10, competence: +5, psych_load: -10, phys_energy: +10 },
-                            result: 'good'
-                        };
-                    } else if (rand < 0.6) {
-                        return {
-                            diff: { inst_fairness: -5, inter_fairness: -10, autonomy: 0, competence: -5, psych_load: +10, phys_energy: 0 },
-                            result: 'bad'
-                        };
-                    } else {
-                        return {
-                            diff: { inst_fairness: 0, inter_fairness: 0, autonomy: 0, competence: 0, psych_load: 0, phys_energy: 0 },
-                            result: 'none'
-                        };
-                    }
+                    if (rand < 0.3) return { diff: { inst_fairness: 0, inter_fairness: 0, autonomy: +10, competence: +5, psych_load: -10, phys_energy: +10 }, result: 'good' };
+                    else if (rand < 0.6) return { diff: { inst_fairness: -5, inter_fairness: -10, autonomy: 0, competence: -5, psych_load: +10, phys_energy: 0 }, result: 'bad' };
+                    return { diff: { inst_fairness: 0, inter_fairness: 0, autonomy: 0, competence: 0, psych_load: 0, phys_energy: 0 }, result: 'none' };
                 },
-                getMessages: (result) => {
-                    if (result === 'good') return [
-                        "部下は自分のペースで仕事を進め、調子を取り戻したようだ。",
-                        "余計な干渉をしなかったことで、部下はのびのびとしている。",
-                        "少し休憩していたようだが、その後集中してタスクを片付けた。"
-                    ];
-                    if (result === 'bad') return [
-                        "部下は手持ち無沙汰にしている...「放置されている」と感じたようだ。",
-                        "困っているようだが、声をかけなかったためミスが発生してしまった。",
-                        "誰とも会話せず一日が終わり、部下は孤独を感じている。"
-                    ];
-                    return [
-                        "特に変わった様子はない。淡々と時間が過ぎた。",
-                        "部下は黙々と作業をしている。良くも悪くも変化はない。",
-                        "窓の外を眺めている...何を考えているのだろうか。"
-                    ];
-                }
+                getMessages: (result) => result === 'good' ? ["部下は自分のペースで仕事を進め、調子を取り戻したようだ。", "余計な干渉をしなかったことで、部下はのびのびとしている。", "少し休憩していたようだが、その後集中してタスクを片付けた。"] : result === 'bad' ? ["部下は手持ち無沙汰にしている...「放置されている」と感じたようだ。", "困っているようだが、声をかけなかったためミスが発生してしまった。", "誰とも会話せず一日が終わり、部下は孤独を感じている。"] : ["特に変わった様子はない。淡々と時間が過ぎた。", "部下は黙々と作業をしている。良くも悪くも変化はない。", "窓の外を眺めている...何を考えているのだろうか。"]
             }
         ];
 
@@ -356,69 +181,29 @@
             const [lastMessage, setLastMessage] = useState("");
             const [eventMessage, setEventMessage] = useState(null);
             const [history, setHistory] = useState([]);
+            // 履歴分析用の詳細データ
+            const [statsHistory, setStatsHistory] = useState([]);
             const [currentActions, setCurrentActions] = useState([]);
             const [gameOverReason, setGameOverReason] = useState("");
             const [currentSituation, setCurrentSituation] = useState(WEEKLY_SITUATIONS[0]);
             const [score, setScore] = useState(0); 
             const logsEndRef = useRef(null);
 
-            useEffect(() => {
-                logsEndRef.current?.scrollIntoView({ behavior: "smooth" });
-            }, [history]);
+            useEffect(() => { logsEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [history]);
 
-            // スコア計算ヘルパー
-            const calculateScore = (s) => {
-                return Math.floor((
-                    s.inst_fairness + 
-                    s.inter_fairness + 
-                    s.autonomy + 
-                    s.competence + 
-                    (100 - s.psych_load) + 
-                    s.phys_energy
-                ) / 6);
-            };
+            // --- ヘルパー関数群 ---
+            const calculateScore = (s) => Math.floor((s.inst_fairness + s.inter_fairness + s.autonomy + s.competence + (100 - s.psych_load) + s.phys_energy) / 6);
 
-            // 状態判定ロジック（スコア基準の再定義）
             const determineMentalStateId = (s) => {
-                // --- 1. 即死判定 (Turnover) ---
-                if (
-                    s.inst_fairness <= 0 || s.inter_fairness <= 0 || 
-                    s.autonomy <= 0 || s.competence <= 0 || 
-                    s.phys_energy <= 0 || s.psych_load >= 100
-                ) return 'turnover';
-
+                if (s.inst_fairness <= 0 || s.inter_fairness <= 0 || s.autonomy <= 0 || s.competence <= 0 || s.phys_energy <= 0 || s.psych_load >= 100) return 'turnover';
                 const avgScore = calculateScore(s);
-
-                // --- 2. スコアに基づく状態判定 ---
-                // 退職・転出: 平均30以下
                 if (avgScore <= 30) return 'turnover';
-
-                // 無関心: 30超〜40以下
                 if (avgScore <= 40) return 'apathy';
-
-                // 静かな退職: 40超〜50以下
                 if (avgScore <= 50) return 'quiet_quit';
-
-                // 諦め・適応: 50超〜65以下
                 if (avgScore <= 65) return 'resignation';
-
-                // 葛藤・抵抗: 65超〜80以下
                 if (avgScore <= 80) return 'conflict';
-
-                // 揺らぎ・迷い: 80超〜95未満
                 if (avgScore < 95) return 'waver';
-
-                // 充実・成長: 全て95以上 (AND条件)
-                if (
-                    s.inst_fairness >= 95 &&
-                    s.inter_fairness >= 95 &&
-                    s.autonomy >= 95 &&
-                    s.competence >= 95 &&
-                    s.phys_energy >= 95 &&
-                    s.psych_load <= 5
-                ) return 'growth';
-
-                // スコアは高いが全パラメータ95以上ではない場合、揺らぎ・迷い（または葛藤）にとどめる
+                if (s.inst_fairness >= 95 && s.inter_fairness >= 95 && s.autonomy >= 95 && s.competence >= 95 && s.phys_energy >= 95 && s.psych_load <= 5) return 'growth';
                 return 'waver';
             };
 
@@ -429,13 +214,15 @@
             };
 
             const startGame = () => {
-                setStats(generateInitialStats()); 
+                const initialStats = generateInitialStats();
+                setStats(initialStats); 
                 setParameterChanges({});
                 setWeek(1);
                 setGameState('playing');
                 setLastMessage("「今期もよろしくお願いします、部長！」");
                 setEventMessage(null);
                 setHistory([]);
+                setStatsHistory([{ week: 0, stats: initialStats, action: "開始", score: calculateScore(initialStats) }]); // 初期状態記録
                 updateWeeklySituation();
                 pickRandomActions();
             };
@@ -448,63 +235,54 @@
             const handleAction = (action) => {
                 const { diff: changes, result } = action.effect(stats);
                 let newStats = { ...stats };
-                
-                Object.keys(changes).forEach(key => {
-                    newStats[key] += changes[key];
-                });
+                Object.keys(changes).forEach(key => { newStats[key] += changes[key]; });
+                Object.keys(newStats).forEach(key => { newStats[key] = Math.max(0, Math.min(100, newStats[key])); });
 
                 setParameterChanges(changes);
+                setStats(newStats);
 
+                // メッセージ処理
                 const possibleMessages = action.getMessages(result);
                 const actionMsg = pickMsg(possibleMessages);
-                
                 setLastMessage(actionMsg);
                 
                 let historyColor = 'text-gray-700';
                 if (result === 'good') historyColor = 'text-green-700 font-bold';
                 if (result === 'bad') historyColor = 'text-red-700 font-bold';
 
-                const newHistory = [...history, { 
-                    week, 
-                    type: 'action', 
-                    text: `${action.label} → ${actionMsg}`,
-                    className: historyColor
-                }];
-
+                const newHistory = [...history, { week, type: 'action', text: `${action.label} → ${actionMsg}`, className: historyColor }];
+                
+                // イベント処理
                 let evtMsg = null;
                 if (Math.random() < 0.25 && week < MAX_WEEKS) {
                     const evt = RANDOM_EVENTS[Math.floor(Math.random() * RANDOM_EVENTS.length)];
-                    Object.keys(evt.effect).forEach(key => {
-                        newStats[key] += evt.effect[key];
-                    });
+                    Object.keys(evt.effect).forEach(key => { newStats[key] += evt.effect[key]; });
+                    Object.keys(newStats).forEach(key => { newStats[key] = Math.max(0, Math.min(100, newStats[key])); });
                     evtMsg = evt;
                     newHistory.push({ week, type: 'event', text: `⚡ ${evt.desc}` });
                 }
                 setEventMessage(evtMsg);
                 setHistory(newHistory);
 
-                Object.keys(newStats).forEach(key => {
-                    newStats[key] = Math.max(0, Math.min(100, newStats[key]));
-                });
+                // 統計履歴の保存
+                setStatsHistory(prev => [...prev, { 
+                    week, 
+                    stats: {...newStats}, 
+                    action: action.label, 
+                    result, 
+                    event: evtMsg ? evtMsg.title : null,
+                    score: calculateScore(newStats)
+                }]);
 
-                setStats(newStats);
                 checkGameState(newStats, week);
             };
 
             const checkGameState = (currentStats, currentWeek) => {
                 const currentState = determineMentalStateId(currentStats);
-                
-                if (currentState === 'turnover') {
-                    finishGame('turnover', currentStats);
-                    return;
-                }
-
+                if (currentState === 'turnover') { finishGame('turnover', currentStats); return; }
                 if (currentWeek >= MAX_WEEKS) {
-                    if (['quiet_quit', 'apathy', 'turnover'].includes(currentState)) {
-                        finishGame('quiet_quit_end', currentStats);
-                    } else {
-                        finishGame('victory', currentStats);
-                    }
+                    if (['quiet_quit', 'apathy', 'turnover'].includes(currentState)) { finishGame('quiet_quit_end', currentStats); } 
+                    else { finishGame('victory', currentStats); }
                 } else {
                     setWeek(prev => prev + 1);
                     updateWeeklySituation(); 
@@ -514,149 +292,116 @@
 
             const finishGame = (reason, finalStats) => {
                 let reasonText = "";
-                let calculatedScore = 0;
-
-                if (reason === 'victory') {
-                    calculatedScore = calculateScore(finalStats);
-                } else {
-                    calculatedScore = 0; 
-                }
+                let calculatedScore = reason === 'victory' ? calculateScore(finalStats) : 0;
 
                 switch(reason) {
                     case 'turnover': 
-                        if(finalStats.inst_fairness <= 0 || finalStats.inter_fairness <= 0 || finalStats.autonomy <= 0 || finalStats.competence <= 0 || finalStats.phys_energy <= 0) {
-                            reasonText = "限界を超えました。何かが完全に欠落し、部下は去りました。（原因：気力の枯渇）";
-                        }
-                        else if(finalStats.psych_load >= 90) reasonText = "「もう無理です...会社に来るのが怖くて...」休職願が出されました。（原因：心理的負荷の限界）";
-                        else if(finalStats.phys_energy <= 10) reasonText = "深夜、部下がオフィスで倒れ救急搬送されました。（原因：身体的エネルギーの枯渇）";
-                        else reasonText = "「この会社には未来がありません。」退職届が叩きつけられました。（原因：公平性の欠如、または総合的な不満）";
+                        if(finalStats.inst_fairness <= 0 || finalStats.inter_fairness <= 0 || finalStats.autonomy <= 0 || finalStats.competence <= 0 || finalStats.phys_energy <= 0) reasonText = "限界を超えました。何かが欠落し、部下は去りました。";
+                        else if(finalStats.psych_load >= 90) reasonText = "メンタル不調により休職願が提出されました。";
+                        else if(finalStats.phys_energy <= 10) reasonText = "過労により倒れ、救急搬送されました。";
+                        else reasonText = "「この会社には未来がありません」と退職届が出されました。";
                         break;
                     case 'quiet_quit_end':
-                        reasonText = "期間満了ですが、部下は完全にやる気を失っています。「言われたことだけやります...」事実上のマネジメント敗北です。（原因：静かな退職・無関心）";
+                        reasonText = "期間満了ですが、部下は完全にやる気を失っています。事実上のマネジメント敗北です。";
                         break;
                     case 'victory':
                         reasonText = "部下は素晴らしい状態で期を終えました。信頼関係は盤石です！";
                         break;
-                    default: 
-                        reasonText = "ゲームオーバー";
                 }
-                
                 setScore(calculatedScore);
                 setGameOverReason(reasonText);
                 setGameState(reason === 'victory' ? 'victory' : 'gameover');
             };
 
+            // 分析用データをクリップボードにコピー
+            const copyAnalysisData = () => {
+                const header = "Week,Action,Event,Score,InstFairness,InterFairness,Autonomy,Competence,PsychLoad,PhysEnergy\n";
+                const rows = statsHistory.map(h => 
+                    `${h.week},${h.action},${h.event || ''},${h.score},${h.stats.inst_fairness},${h.stats.inter_fairness},${h.stats.autonomy},${h.stats.competence},${h.stats.psych_load},${h.stats.phys_energy}`
+                ).join("\n");
+                navigator.clipboard.writeText(header + rows).then(() => alert("分析用データをコピーしました！Excel等に貼り付けてください。"));
+            };
+
+            // 簡易グラフ描画用
+            const renderGraph = () => {
+                if (statsHistory.length < 2) return null;
+                const width = 100; 
+                const height = 50;
+                const points = statsHistory.map((h, i) => {
+                    const x = (i / (statsHistory.length - 1)) * width;
+                    const y = height - (h.score / 100 * height);
+                    return `${x},${y}`;
+                }).join(" ");
+
+                return (
+                    <div className="w-full h-24 bg-slate-50 border border-slate-200 rounded p-2 relative mt-4">
+                        <div className="text-xs text-gray-400 absolute top-0 left-1">Score推移</div>
+                        <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full overflow-visible" preserveAspectRatio="none">
+                            <polyline fill="none" stroke="#3b82f6" strokeWidth="2" points={points} />
+                            {statsHistory.map((h, i) => (
+                                <circle key={i} cx={(i / (statsHistory.length - 1)) * width} cy={height - (h.score / 100 * height)} r="1.5" fill="#3b82f6" />
+                            ))}
+                        </svg>
+                    </div>
+                );
+            };
+
             const currentMentalStateId = determineMentalStateId(stats);
             const currentStateIndex = MENTAL_STATES.findIndex(s => s.id === currentMentalStateId);
-            
             const rotationAngle = currentStateIndex * (360 / MENTAL_STATES.length); 
 
-            // --- UIコンポーネント ---
-
+            // --- UI ---
             const ProgressBar = ({ label, value, change, color }) => (
                 <div className="mb-2.5 w-full">
                     <div className="flex justify-between items-end text-xs text-white mb-0.5 px-0.5">
                         <span className="font-medium bg-slate-900/50 px-1 rounded">{label}</span>
                         <div className="flex gap-1 items-baseline">
-                            {change !== 0 && change !== undefined && (
-                                <span className={`text-[10px] ${change > 0 ? 'text-green-300' : 'text-red-300'}`}>
-                                    {change > 0 ? '▲' : '▼'}{Math.abs(change)}
-                                </span>
-                            )}
+                            {change !== 0 && change !== undefined && (<span className={`text-[10px] ${change > 0 ? 'text-green-300' : 'text-red-300'}`}>{change > 0 ? '▲' : '▼'}{Math.abs(change)}</span>)}
                             <span className="font-mono font-bold text-sm">{value}</span>
                         </div>
                     </div>
                     <div className="w-full bg-slate-700/50 h-2.5 rounded-sm overflow-hidden backdrop-blur-sm border border-slate-600/50">
-                        <div 
-                            className="h-full transition-all duration-500 rounded-sm" 
-                            style={{ width: `${value}%`, backgroundColor: color }}
-                        />
+                        <div className="h-full transition-all duration-500 rounded-sm" style={{ width: `${value}%`, backgroundColor: color }} />
                     </div>
                 </div>
             );
 
             return (
-                <div className="w-full max-w-5xl h-full md:h-auto bg-white rounded-xl shadow-2xl overflow-hidden border border-slate-200 flex flex-col">
-                    
-                    {/* Header */}
+                <div className="w-full max-w-6xl h-full bg-white rounded-xl shadow-2xl overflow-hidden border border-slate-200 flex flex-col">
                     <div className="bg-slate-800 text-white p-4 flex justify-between items-center shrink-0">
-                        <h1 className="font-bold text-lg flex items-center gap-2">
-                            <Briefcase size={20} />
-                            部下の感情モデル
-                        </h1>
-                        <div className="text-sm bg-slate-700 px-3 py-1 rounded-full font-mono">
-                            Week {gameState === 'start' ? 1 : week} / {MAX_WEEKS}
-                        </div>
+                        <h1 className="font-bold text-lg flex items-center gap-2"><Briefcase size={20} /> 組織心理学サバイバル</h1>
+                        <div className="text-sm bg-slate-700 px-3 py-1 rounded-full font-mono">Week {gameState === 'start' ? 1 : week} / {MAX_WEEKS}</div>
                     </div>
 
-                    {/* Start Screen */}
                     {gameState === 'start' && (
                         <div className="p-8 text-center flex-1 flex flex-col justify-center items-center">
                             <div className="mb-6 text-7xl">🏢</div>
-                            <h2 className="text-3xl font-bold mb-4">部下マネジメントゲーム </h2>
+                            <h2 className="text-3xl font-bold mb-4">マネジメント・サバイバル <span className="text-blue-400 text-sm">Training Ver.</span></h2>
                             <p className="text-gray-600 mb-8 leading-relaxed text-base max-w-lg">
                                 あなたはマネージャーとして、部下の6つの心理パラメータを管理します。<br/>
-                                <br/>
-                                <strong>⚠️ ゲームオーバー条件:</strong><br/>
-                                1. いずれかのパラメータが0になる<br/>
-                                2. 平均スコアが30以下になる<br/>
-                                3. 期間終了時に「静かな退職」以下の状態であること<br/>
-                                <br/>
-                                理想の「充実・成長」状態（全パラメータ95以上）を目指してください。
+                                この研修では、直感的なプレイの後に<br/><strong>「なぜその結果になったか」をデータで振り返る</strong>プロセスを重視します。<br/>
+                                まずは第1期、あなたのマネジメントスタイルを試してみてください。
                             </p>
-                            <button 
-                                onClick={startGame}
-                                className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-lg text-lg transition-transform transform active:scale-95"
-                            >
-                                マネジメント開始（初期ステータス生成）
-                            </button>
+                            <button onClick={startGame} className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-lg text-lg transition active:scale-95">第1期 経営開始</button>
                         </div>
                     )}
 
-                    {/* Main Game Screen */}
                     {gameState === 'playing' && (
                         <div className="flex flex-col md:flex-row h-full overflow-hidden">
-                            
-                            {/* 左カラム: ステータス表示 */}
-                            <div className="flex-1 bg-slate-50/50 flex flex-col items-center justify-center p-6 relative overflow-hidden border-b md:border-b-0 md:border-r border-slate-200">
-                                <div className="relative w-[400px] h-[400px] flex items-center justify-center">
-                                    <div 
-                                        className="absolute w-full h-full flex items-center justify-center transition-transform duration-1000 ease-in-out"
-                                        style={{ transform: `rotate(${rotationAngle}deg)` }}
-                                    >
+                            <div className="flex-1 bg-slate-50/50 flex flex-col items-center justify-center p-4 relative border-r border-slate-200">
+                                <div className="relative w-[400px] h-[400px] flex items-center justify-center transform scale-90 md:scale-100">
+                                    <div className="absolute w-full h-full flex items-center justify-center transition-transform duration-1000 ease-in-out" style={{ transform: `rotate(${rotationAngle}deg)` }}>
                                         <div className="absolute w-[340px] h-[340px] rounded-full border-2 border-dashed border-slate-300"></div>
                                         {MENTAL_STATES.map((state, index) => {
-                                            // 反時計回りに配置することで、悪化（index増）時に時計回り回転を実現
                                             const angle = -index * (360 / MENTAL_STATES.length);
                                             const radius = 170; 
                                             const isActive = state.id === currentMentalStateId;
                                             return (
-                                                <div
-                                                    key={state.id}
-                                                    className="absolute flex flex-col items-center justify-center text-center transition-all duration-500"
-                                                    style={{
-                                                        top: '50%',
-                                                        left: '50%',
-                                                        marginTop: '-3rem',
-                                                        marginLeft: '-3rem',
-                                                        transform: `rotate(${angle}deg) translate(0, -${radius}px) rotate(${-angle}deg) rotate(${-rotationAngle}deg)` 
-                                                    }}
-                                                >
-                                                    <div 
-                                                        className={`w-24 h-24 rounded-full flex flex-col items-center justify-center shadow-lg border-2 transition-all duration-500 ${isActive ? 'scale-110 ring-4 ring-offset-2 ring-yellow-200 font-bold z-10' : 'bg-white/90 border-slate-300 opacity-60'}`}
-                                                        style={{ 
-                                                            backgroundColor: isActive ? state.colorBg : undefined,
-                                                            borderColor: isActive ? state.colorBorder : undefined
-                                                        }}
-                                                    >
+                                                <div key={state.id} className="absolute flex flex-col items-center justify-center text-center transition-all duration-500" style={{ top: '50%', left: '50%', marginTop: '-3rem', marginLeft: '-3rem', transform: `rotate(${angle}deg) translate(0, -${radius}px) rotate(${-angle}deg) rotate(${-rotationAngle}deg)` }}>
+                                                    <div className={`w-24 h-24 rounded-full flex flex-col items-center justify-center shadow-lg border-2 transition-all duration-500 ${isActive ? 'scale-110 ring-4 ring-offset-2 ring-yellow-200 font-bold z-10' : 'bg-white/90 border-slate-300 opacity-60'}`} style={{ backgroundColor: isActive ? state.colorBg : undefined, borderColor: isActive ? state.colorBorder : undefined }}>
                                                         <span className="text-sm text-slate-800 leading-tight px-2">{state.label}</span>
                                                         {state.subLabel && <span className="text-[10px] text-slate-500 mt-1">{state.subLabel}</span>}
                                                     </div>
-                                                    {isActive && (
-                                                        <div className="absolute -bottom-8 bg-slate-800 text-white text-[10px] px-2 py-1 rounded shadow animate-bounce whitespace-nowrap z-20 hidden md:block">
-                                                            現在: {state.label}
-                                                        </div>
-                                                    )}
                                                 </div>
                                             );
                                         })}
@@ -670,111 +415,38 @@
                                         <ProgressBar label="身体エナジー" value={stats.phys_energy} change={parameterChanges.phys_energy} color="#FB923C" />
                                     </div>
                                 </div>
-
-                                {/* アイコン追加エリア */}
-                                <div className="mt-8 flex justify-center items-end gap-8">
-                                    {/* 部下 */}
-                                    <div className="flex flex-col items-center gap-2">
-                                        <div className={`p-4 rounded-full bg-white border-2 border-slate-200 shadow-sm transition-colors duration-500 ${
-                                            currentMentalStateId === 'growth' ? 'bg-red-50 border-red-200' :
-                                            currentMentalStateId === 'turnover' ? 'bg-purple-50 border-purple-200' : ''
-                                        }`}>
-                                            <User size={48} className={
-                                                currentMentalStateId === 'growth' ? 'text-red-500' :
-                                                currentMentalStateId === 'turnover' ? 'text-purple-500' : 'text-slate-600'
-                                            } />
-                                        </div>
-                                        <span className="text-xs font-bold text-slate-500">部下</span>
-                                    </div>
-
-                                    {/* 上司（プレイヤー） */}
-                                    <div className="flex flex-col items-center gap-2">
-                                        <div className="p-4 rounded-full bg-white border-2 border-slate-200 shadow-sm">
-                                            <UserCheck size={48} className="text-blue-600" />
-                                        </div>
-                                        <span className="text-xs font-bold text-slate-500">あなた（上司）</span>
-                                    </div>
-                                </div>
                             </div>
 
-                            {/* 右カラム: 操作エリア */}
                             <div className="flex-1 flex flex-col min-w-0 bg-white z-20">
                                 <div className="flex-1 overflow-y-auto p-6 flex flex-col justify-center">
                                     <div className="w-full mb-4">
-                                        <div className="flex items-center gap-2 text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider">
-                                            <TrendingUp size={14} />
-                                            今週の職場環境 / 業界ニュース
-                                        </div>
-                                        <div className={`p-3 rounded-lg border-l-4 text-sm font-medium ${
-                                            currentSituation.type === 'busy' || currentSituation.type === 'trouble' || currentSituation.type === 'bad' 
-                                            ? 'bg-red-50 border-red-400 text-red-800' 
-                                            : currentSituation.type === 'good'
-                                            ? 'bg-blue-50 border-blue-400 text-blue-800'
-                                            : 'bg-gray-50 border-gray-400 text-gray-700'
-                                        }`}>
-                                            {currentSituation.text}
-                                        </div>
+                                        <div className="flex items-center gap-2 text-xs font-bold text-slate-400 mb-1 uppercase tracking-wider"><TrendingUp size={14} /> 今週の職場環境 / 業界ニュース</div>
+                                        <div className={`p-3 rounded-lg border-l-4 text-sm font-medium ${currentSituation.type === 'busy' || currentSituation.type === 'trouble' || currentSituation.type === 'bad' ? 'bg-red-50 border-red-400 text-red-800' : currentSituation.type === 'good' ? 'bg-blue-50 border-blue-400 text-blue-800' : 'bg-gray-50 border-gray-400 text-gray-700'}`}>{currentSituation.text}</div>
                                     </div>
-
                                     <div className="w-full mb-6">
                                         <div className="bg-slate-100 px-6 py-4 rounded-xl text-base text-slate-700 w-full text-center border border-slate-200 min-h-[4rem] flex items-center justify-center shadow-inner italic relative">
-                                            <span className="absolute top-2 left-2 text-3xl text-slate-200">"</span>
-                                            {lastMessage}
-                                            <span className="absolute bottom-2 right-2 text-3xl text-slate-200">"</span>
+                                            <span className="absolute top-2 left-2 text-3xl text-slate-200">"</span>{lastMessage}<span className="absolute bottom-2 right-2 text-3xl text-slate-200">"</span>
                                         </div>
-                                        {eventMessage && (
-                                            <div className="bg-yellow-50 px-4 py-3 mt-2 rounded-lg text-sm text-yellow-800 text-center border border-yellow-200 animate-pulse font-bold flex items-center justify-center gap-2">
-                                                <Zap size={16} /> {eventMessage.title}: {eventMessage.desc}
-                                            </div>
-                                        )}
+                                        {eventMessage && <div className="bg-yellow-50 px-4 py-3 mt-2 rounded-lg text-sm text-yellow-800 text-center border border-yellow-200 animate-pulse font-bold flex items-center justify-center gap-2"><Zap size={16} /> {eventMessage.title}: {eventMessage.desc}</div>}
                                     </div>
-
                                     <div className="w-full space-y-3">
-                                        <h3 className="text-sm font-bold text-gray-500 mb-2 flex items-center gap-2">
-                                            <Briefcase size={16} />
-                                            今週のアクション（ランダム選出）
-                                        </h3>
+                                        <h3 className="text-sm font-bold text-gray-500 mb-2 flex items-center gap-2"><Briefcase size={16} /> 今週のアクション</h3>
                                         <div className="grid grid-cols-1 gap-3">
                                             {currentActions.map((action) => (
-                                                <button
-                                                    key={action.id}
-                                                    onClick={() => handleAction(action)}
-                                                    className="w-full text-left bg-white hover:bg-blue-50 border-2 border-slate-200 hover:border-blue-500 p-4 rounded-xl transition-all duration-200 group relative overflow-hidden shadow-sm active:scale-[0.99]"
-                                                >
+                                                <button key={action.id} onClick={() => handleAction(action)} className="w-full text-left bg-white hover:bg-blue-50 border-2 border-slate-200 hover:border-blue-500 p-4 rounded-xl transition-all duration-200 group relative overflow-hidden shadow-sm active:scale-[0.99]">
                                                     <div className="flex justify-between items-center relative z-10">
-                                                        <div className="flex-1 min-w-0 pr-4">
-                                                            <span className="font-bold text-slate-800 text-base block mb-1">{action.label}</span>
-                                                            <span className="text-xs text-slate-500 block">{action.desc}</span>
-                                                        </div>
-                                                        <div className="bg-slate-50 text-slate-400 p-3 rounded-full group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors shrink-0">
-                                                            {action.type === ActionType.COMMUNICATION && <MessageCircle size={20} />}
-                                                            {action.type === ActionType.WORK && <Briefcase size={20} />}
-                                                            {action.type === ActionType.REST && <Coffee size={20} />}
-                                                            {action.type === ActionType.WAIT && <Eye size={20} />}
-                                                        </div>
+                                                        <div className="flex-1 min-w-0 pr-4"><span className="font-bold text-slate-800 text-base block mb-1">{action.label}</span><span className="text-xs text-slate-500 block">{action.desc}</span></div>
+                                                        <div className="bg-slate-50 text-slate-400 p-3 rounded-full group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors shrink-0">{action.type === ActionType.COMMUNICATION && <MessageCircle size={20} />}{action.type === ActionType.WORK && <Briefcase size={20} />}{action.type === ActionType.REST && <Coffee size={20} />}{action.type === ActionType.WAIT && <Eye size={20} />}</div>
                                                     </div>
                                                 </button>
                                             ))}
                                         </div>
                                     </div>
                                 </div>
-                                
                                 <div className="bg-slate-50 border-t border-slate-200 p-3 h-40 shrink-0">
-                                    <h4 className="text-xs font-bold text-gray-500 mb-2 flex items-center gap-1">
-                                        <History size={12} />
-                                        活動履歴
-                                    </h4>
+                                    <h4 className="text-xs font-bold text-gray-500 mb-2 flex items-center gap-1"><History size={12} /> 活動履歴</h4>
                                     <div className="h-full overflow-y-auto pb-6 text-xs space-y-2 pr-2 custom-scrollbar">
-                                        {history.length === 0 ? (
-                                            <p className="text-gray-400 italic text-center py-4">履歴はまだありません</p>
-                                        ) : (
-                                            history.map((log, i) => (
-                                                <div key={i} className={`p-2 rounded border ${log.type === 'event' ? 'bg-yellow-50 border-yellow-200 text-yellow-800' : 'bg-white border-slate-200'} ${log.className || 'text-gray-700'}`}>
-                                                    <span className="font-mono font-bold text-gray-400 mr-2 border-r border-gray-200 pr-2">W{log.week}</span>
-                                                    {log.text}
-                                                </div>
-                                            ))
-                                        )}
+                                        {history.length === 0 ? <p className="text-gray-400 italic text-center py-4">履歴はまだありません</p> : history.map((log, i) => (<div key={i} className={`p-2 rounded border ${log.type === 'event' ? 'bg-yellow-50 border-yellow-200 text-yellow-800' : 'bg-white border-slate-200'} ${log.className || 'text-gray-700'}`}><span className="font-mono font-bold text-gray-400 mr-2 border-r border-gray-200 pr-2">W{log.week}</span>{log.text}</div>))}
                                         <div ref={logsEndRef} />
                                     </div>
                                 </div>
@@ -782,42 +454,22 @@
                         </div>
                     )}
 
-                    {/* Game Over / Victory Screen */}
                     {(gameState === 'gameover' || gameState === 'victory') && (
-                        <div className={`p-12 text-center flex-1 flex flex-col justify-center items-center ${gameState === 'victory' ? 'bg-blue-50' : 'bg-red-50'}`}>
+                        <div className={`p-12 text-center flex-1 flex flex-col justify-center items-center ${gameState === 'victory' ? 'bg-blue-50' : 'bg-red-50'} overflow-y-auto`}>
                             {gameState === 'victory' ? (
-                                <>
-                                    <Award size={80} className="mx-auto text-yellow-500 mb-6" />
-                                    <h2 className="text-3xl font-bold text-blue-900 mb-2">QUARTER COMPLETE!</h2>
-                                    <div className="text-5xl font-bold text-blue-600 mb-4">{score}<span className="text-2xl text-blue-400">点</span></div>
-                                    <p className="text-blue-700 mb-8 text-lg">{gameOverReason}</p>
-                                </>
+                                <><Award size={80} className="mx-auto text-yellow-500 mb-4" /><h2 className="text-3xl font-bold text-blue-900 mb-2">QUARTER COMPLETE!</h2><div className="text-5xl font-bold text-blue-600 mb-4">{score}<span className="text-2xl text-blue-400">点</span></div><p className="text-blue-700 mb-8 text-lg">マネジメント成功です。素晴らしいリーダーシップでした！</p></>
                             ) : (
-                                <>
-                                    {/* 敗北時はゴーストアイコンかUserMinusを表示 */}
-                                    {gameOverReason.includes("静かな退職") ? (
-                                        <Ghost size={80} className="mx-auto text-gray-500 mb-6" />
-                                    ) : (
-                                        <UserMinus size={80} className="mx-auto text-red-500 mb-6" />
-                                    )}
-                                    <h2 className="text-3xl font-bold text-red-800 mb-2">GAME OVER</h2>
-                                    <div className="text-5xl font-bold text-gray-400 mb-4">0<span className="text-2xl text-gray-300">点</span></div>
-                                    <div className="bg-white p-6 rounded-xl shadow-md border border-red-100 mb-10 text-left relative mt-4 max-w-lg w-full">
-                                        <div className="absolute -top-3 left-6 bg-red-100 text-red-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
-                                            {gameOverReason.includes("静かな退職") ? "マネジメント失敗" : "退職/休職届"}
-                                        </div>
-                                        <p className="text-gray-700 font-serif italic text-lg leading-relaxed mt-2">"{gameOverReason}"</p>
-                                    </div>
-                                </>
+                                <>{gameOverReason.includes("静かな退職") ? <Ghost size={80} className="mx-auto text-gray-500 mb-4" /> : <UserMinus size={80} className="mx-auto text-red-500 mb-4" />}<h2 className="text-3xl font-bold text-red-800 mb-2">GAME OVER</h2><div className="text-5xl font-bold text-gray-400 mb-4">0<span className="text-2xl text-gray-300">点</span></div><div className="bg-white p-6 rounded-xl shadow-md border border-red-100 mb-6 text-left relative mt-4 max-w-lg w-full"><div className="absolute -top-3 left-6 bg-red-100 text-red-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">{gameOverReason.includes("静かな退職") ? "マネジメント失敗" : "退職/休職届"}</div><p className="text-gray-700 font-serif italic text-lg leading-relaxed mt-2">"{gameOverReason}"</p></div></>
                             )}
                             
-                            <button 
-                                onClick={startGame}
-                                className={`px-8 py-4 text-white font-bold rounded-lg shadow-lg text-lg transition flex items-center gap-2 ${gameState === 'victory' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-slate-800 hover:bg-slate-900'}`}
-                            >
-                                <RefreshCw size={20} />
-                                {gameState === 'victory' ? '次の期へ' : '再挑戦（初期値ランダム）'}
-                            </button>
+                            <div className="w-full max-w-lg mb-8">
+                                <h3 className="text-sm font-bold text-gray-600 mb-2 text-left flex items-center gap-2"><BarChart size={16}/> スコア推移（振り返り用）</h3>
+                                {renderGraph()}
+                                <button onClick={copyAnalysisData} className="mt-4 w-full bg-white hover:bg-gray-50 text-slate-700 border border-slate-300 font-bold py-2 px-4 rounded flex items-center justify-center gap-2 transition"><Copy size={16} /> プレイデータをコピー（CSV形式）</button>
+                                <p className="text-xs text-gray-400 mt-2 text-left">※ コピーしたデータはExcelなどに貼り付けて分析できます。</p>
+                            </div>
+
+                            <button onClick={startGame} className={`px-8 py-4 text-white font-bold rounded-lg shadow-lg text-lg transition flex items-center gap-2 ${gameState === 'victory' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-slate-800 hover:bg-slate-900'}`}><RefreshCw size={20} /> {gameState === 'victory' ? '次の期へ' : '再挑戦（初期値ランダム）'}</button>
                         </div>
                     )}
                 </div>
